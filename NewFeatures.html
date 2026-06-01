@@ -290,23 +290,35 @@
     </div>
   </div>
 
+  <div class="feature-card done">
+    <div class="feature-header">
+      <div class="feature-number">1</div>
+      <div class="feature-title">Fix 10-Measure Cap &rarr; 32 Measures</div>
+    </div>
+    <div class="feature-desc">
+      Raised <code style="color:#bbb;font-size:12px">constant_MAX_MEASURES</code> from 10 to 32
+      in <code style="color:#bbb;font-size:12px">groove_utils.js</code>. The URL parser clamp now
+      allows grooves up to 32 measures. Note arrays are dynamically sized so no further changes were
+      needed. The early-warning alert in <code style="color:#bbb;font-size:12px">groove_writer.js</code>
+      was moved from 5 to 16 measures with positive wording confirming 32 is fully supported.
+    </div>
+    <div class="feature-meta">
+      <span class="badge badge-done">Shipped</span>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/5e41ab3" target="_blank">#5e41ab3</a>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/d636cfd" target="_blank">#d636cfd</a>
+    </div>
+    <div class="files-changed">
+      <code>js/groove_utils.js</code>
+      <code>js/groove_writer.js</code>
+    </div>
+  </div>
+
 </div>
 
 <p class="section-title">Planned Features</p>
 <div class="features-grid">
 
-  <div class="feature-card">
-    <div class="feature-header">
-      <div class="feature-number">1</div>
-      <div class="feature-title">Fix 10-Measure Cap</div>
-    </div>
-    <div class="feature-desc">
-      The app hard-stops at 10 measures. Remove the hard-coded measure limit in
-      <code style="color:#bbb;font-size:12px">groove_writer.js</code> so longer grooves,
-      fill sequences, and full song charts can be written.
-    </div>
-    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
-  </div>
+
 
   <div class="feature-card">
     <div class="feature-header">
