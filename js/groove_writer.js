@@ -1543,15 +1543,15 @@ function GrooveWriter() {
 						set_hh_state(id, is_hh_on(id) ? "off" : "normal", true);
 					break;
 				case "snare":
-					// cycle: off -> ghost -> normal -> accent -> off
+					// cycle: off -> normal -> accent -> ghost -> off  (improvement #7)
 					var sn_cur = get_snare_state(id, "URL");
 					if (sn_cur === false || sn_cur === "-")
-						set_snare_state(id, "ghost", true);
-					else if (sn_cur === "g")
 						set_snare_state(id, "normal", true);
 					else if (sn_cur === "o")
 						set_snare_state(id, "accent", true);
 					else if (sn_cur === "O")
+						set_snare_state(id, "ghost", true);
+					else if (sn_cur === "g")
 						set_snare_state(id, "off", true);
 					else
 						set_snare_state(id, is_snare_on(id) ? "off" : "normal", true);
