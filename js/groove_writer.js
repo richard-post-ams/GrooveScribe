@@ -874,8 +874,8 @@ function GrooveWriter() {
 				var col_right  = col_rect.right - cont_rect.left + scroll_container.scrollLeft;
 				var vis_left   = scroll_container.scrollLeft;
 				var vis_right  = vis_left + scroll_container.clientWidth;
-				// One bar lookahead: scroll this many px before the column reaches the right edge
-				var one_bar_px = scroll_container.scrollWidth / Math.max(1, class_number_of_measures);
+				// Two bar lookahead: use the active column width * notes_per_measure to get one bar in px
+				var one_bar_px = active_bg.offsetWidth * class_notes_per_measure;
 				if ((col_right + (one_bar_px * 2)) > vis_right || col_left < vis_left) {
 					var target = Math.max(0, col_left - 60); // 60px left-side label padding
 					scroll_smooth_to(scroll_container, target);
