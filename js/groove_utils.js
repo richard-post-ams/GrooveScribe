@@ -33,7 +33,7 @@ if (document.currentScript)
 var global_midiInitialized = false;
 
 // global constants
-var constant_MAX_MEASURES = 10;
+var constant_MAX_MEASURES = 32; // raised from 10 - improvement #1
 var constant_DEFAULT_TEMPO = 80;
 var constant_ABC_STICK_R = '"R"x';
 var constant_ABC_STICK_L = '"L"x';
