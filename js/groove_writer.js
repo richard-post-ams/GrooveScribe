@@ -830,7 +830,12 @@ function GrooveWriter() {
 
 		// turn this one on;
 		class_cur_all_notes_highlight_id = id;
-		document.getElementById("bg-highlight" + class_cur_all_notes_highlight_id).style.background = "rgba(50, 126, 173, 0.2)";
+		var active_bg = document.getElementById("bg-highlight" + class_cur_all_notes_highlight_id);
+		if (active_bg) {
+			active_bg.style.background = "rgba(50, 126, 173, 0.2)";
+			// Auto-scroll so the active note column stays visible during playback
+			active_bg.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+		}
 	}
 
 	function hilight_note(instrument, percent_complete) {
