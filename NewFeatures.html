@@ -339,6 +339,28 @@
     </div>
   </div>
 
+  <div class="feature-card done">
+    <div class="feature-header">
+      <div class="feature-number">7</div>
+      <div class="feature-title">Note Velocity — Ghost, Normal, Accent via Left-Click</div>
+    </div>
+    <div class="feature-desc">
+      Left-clicking a note now cycles through velocity levels instead of just toggling on/off.
+      <b>Snare:</b> off &rarr; ghost &rarr; normal &rarr; accent &rarr; off.
+      <b>Hi-hat:</b> off &rarr; normal &rarr; accent &rarr; off.
+      Ghost notes play at velocity 50, normal at 85, accent at 120 — matching the existing
+      MIDI velocity constants. All existing right-click context menu options remain unchanged.
+      Kick and toms toggle as before (one velocity is standard for those instruments).
+    </div>
+    <div class="feature-meta">
+      <span class="badge badge-done">Shipped</span>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/e15ca8a" target="_blank">#e15ca8a</a>
+    </div>
+    <div class="files-changed">
+      <code>js/groove_writer.js</code>
+    </div>
+  </div>
+
 </div>
 
 <p class="section-title">Planned Features</p>
@@ -372,20 +394,7 @@
 
 
 
-  <div class="feature-card">
-    <div class="feature-header">
-      <div class="feature-number">7</div>
-      <div class="feature-title">Note Velocity / Ghost Notes / Accents</div>
-    </div>
-    <div class="feature-desc">
-      Every hit is currently binary: on or off. Add three velocity levels per note
-      (ghost, normal, accent) via right-click or long-press. The ABC notation renderer
-      already supports dynamics via <code style="color:#bbb;font-size:12px">!p!</code>,
-      <code style="color:#bbb;font-size:12px">!mf!</code>,
-      <code style="color:#bbb;font-size:12px">!f!</code> decorators.
-    </div>
-    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
-  </div>
+
 
   <div class="feature-card">
     <div class="feature-header">
