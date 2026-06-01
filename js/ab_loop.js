@@ -2,41 +2,38 @@
  * GrooveScribe A-B Loop - Improvement #6
  * Adds a visual A/B marker per measure. When both markers
  * are set, playback loops only the selected range.
- * Uses the existing create_MIDIURLFromGrooveData loop
- * architecture — slices hh/snare/kick/toms arrays to the
- * selected measure range before generating MIDI.
+ *
+ * Fix: buttons are injected via MutationObserver on
+ * measureContainer so load order doesn't matter.
  * ======================================================= */
 
 (function () {
   'use strict';
 
   /* ---- State ---- */
-  var abLoopStart = null;   // 1-based measure index, or null
+  var abLoopStart = null;
   var abLoopEnd   = null;
 
-  /* ---- Public API used by groove_writer.js ---- */
-
+  /* ---- Public API ---- */
   window.ABLoop = {
-    getStart:   function () { return abLoopStart; },
-    getEnd:     function () { return abLoopEnd; },
-    isActive:   function () { return abLoopStart !== null && abLoopEnd !== null; },
-    clear:      clear,
-    setMarker:  setMarker,
-    applyToGrooveData: applyToGrooveData
+    getStart:          function () { return abLoopStart; },
+    getEnd:            function () { return abLoopEnd; },
+    isActive:          function () { return abLoopStart !== null && abLoopEnd !== null; },
+    clear:             clear,
+    setMarker:         setMarker,
+    applyToGrooveData: applyToGrooveData,
+    injectButtons:     injectButtons
   };
 
   /* ---- Set A or B marker ---- */
   function setMarker(measureIndex) {
-    if (abLoopStart === null || (abLoopEnd !== null)) {
-      // Start fresh: set A point
+    if (abLoopStart === null || abLoopEnd !== null) {
       abLoopStart = measureIndex;
       abLoopEnd   = null;
     } else if (measureIndex === abLoopStart) {
-      // Clicking A again clears
       clear();
       return;
     } else {
-      // Set B point, ensure start <= end
       if (measureIndex < abLoopStart) {
         abLoopEnd   = abLoopStart;
         abLoopStart = measureIndex;
@@ -45,28 +42,34 @@
       }
     }
     updateUI();
+    // Force MIDI reload so the loop range takes effect immediately
+    if (window.myGrooveWriter && window.myGrooveWriter.updateCurrentURL) {
+      window.myGrooveWriter.updateCurrentURL();
+    }
   }
 
   function clear() {
     abLoopStart = null;
     abLoopEnd   = null;
     updateUI();
+    if (window.myGrooveWriter && window.myGrooveWriter.updateCurrentURL) {
+      window.myGrooveWriter.updateCurrentURL();
+    }
   }
 
-  /* ---- Slice grooveData arrays to the selected measure range ---- */
+  /* ---- Slice grooveData arrays to selected measure range ---- */
   function applyToGrooveData(grooveData) {
     if (!window.ABLoop.isActive()) return grooveData;
 
-    var start = abLoopStart - 1;  // convert to 0-based
-    var end   = abLoopEnd;        // exclusive upper bound (0-based)
+    var start = abLoopStart - 1;
+    var end   = abLoopEnd;
     var npm   = grooveData.notesPerMeasure;
 
     var sliced = Object.assign({}, grooveData);
     sliced.numberOfMeasures = end - start;
 
     function sliceArr(arr) {
-      if (!arr) return arr;
-      return arr.slice(start * npm, end * npm);
+      return arr ? arr.slice(start * npm, end * npm) : arr;
     }
 
     sliced.hh_array    = sliceArr(grooveData.hh_array);
@@ -79,11 +82,53 @@
     return sliced;
   }
 
-  /* ---- Update button appearance in the DOM ---- */
+  /* ---- Inject A/B button into a single staff container ---- */
+  function injectButtonIntoContainer(container) {
+    var measureIndex = parseInt(container.id.replace('staff-container', ''), 10);
+    if (isNaN(measureIndex)) return;
+    if (container.querySelector('.ab-loop-btn')) return; // already injected
+
+    var btn = document.createElement('span');
+    btn.className = 'ab-loop-btn';
+    btn.setAttribute('data-measure', measureIndex);
+    btn.title = 'Click to set A-B loop point';
+    btn.textContent = '\u25CB';
+    btn.addEventListener('click', function () {
+      setMarker(measureIndex);
+    });
+
+    // Append after the closeMeasureButton span
+    var closeBtn = container.querySelector('.closeMeasureButton');
+    if (closeBtn && closeBtn.parentNode) {
+      closeBtn.parentNode.insertBefore(btn, closeBtn.nextSibling);
+    } else {
+      container.appendChild(btn);
+    }
+  }
+
+  /* ---- Inject buttons into all existing measure containers ---- */
+  function injectButtons() {
+    var containers = document.querySelectorAll('[id^="staff-container"]');
+    containers.forEach(function (c) {
+      injectButtonIntoContainer(c);
+    });
+    updateUI();
+  }
+
+  /* ---- Watch for new measures being added/removed ---- */
+  function observeMeasureContainer() {
+    var measureContainer = document.getElementById('measureContainer');
+    if (!measureContainer) return;
+
+    var observer = new MutationObserver(function () {
+      injectButtons();
+    });
+    observer.observe(measureContainer, { childList: true, subtree: false });
+  }
+
+  /* ---- Update all button visuals and the player indicator ---- */
   function updateUI() {
-    // Update all measure A/B buttons
-    var btns = document.querySelectorAll('.ab-loop-btn');
-    btns.forEach(function (btn) {
+    document.querySelectorAll('.ab-loop-btn').forEach(function (btn) {
       var m = parseInt(btn.getAttribute('data-measure'), 10);
       btn.classList.remove('ab-a', 'ab-b', 'ab-range');
 
@@ -91,15 +136,15 @@
         if (m === abLoopStart) {
           btn.textContent = 'A';
           btn.classList.add('ab-a');
-          btn.title = 'Loop start (click to clear)';
+          btn.title = 'Loop start — click to clear';
         } else if (m === abLoopEnd) {
           btn.textContent = 'B';
           btn.classList.add('ab-b');
-          btn.title = 'Loop end (click to clear)';
+          btn.title = 'Loop end — click to clear';
         } else if (m > abLoopStart && m < abLoopEnd) {
           btn.textContent = '\u2022';
           btn.classList.add('ab-range');
-          btn.title = 'In loop range';
+          btn.title = 'Inside loop range';
         } else {
           btn.textContent = '\u25CB';
           btn.title = 'Click to set loop point';
@@ -107,20 +152,18 @@
       } else if (abLoopStart !== null && m === abLoopStart) {
         btn.textContent = 'A';
         btn.classList.add('ab-a');
-        btn.title = 'Loop start — click another measure to set end';
+        btn.title = 'A set — click another measure to set B';
       } else {
         btn.textContent = '\u25CB';
         btn.title = 'Click to set A point';
       }
     });
 
-    // Show/hide clear button
     var clearBtn = document.getElementById('abLoopClearBtn');
     if (clearBtn) {
       clearBtn.style.display = window.ABLoop.isActive() ? 'inline-flex' : 'none';
     }
 
-    // Highlight loop-active indicator
     var indicator = document.getElementById('abLoopIndicator');
     if (indicator) {
       if (window.ABLoop.isActive()) {
@@ -135,13 +178,16 @@
     }
   }
 
-  /* ---- Build HTML for an A/B button inside a measure container ---- */
-  window.ABLoop.buttonHTML = function (measureIndex) {
-    return '<span class="ab-loop-btn" data-measure="' + measureIndex +
-           '" title="Click to set loop point" ' +
-           'onclick="window.ABLoop.setMarker(' + measureIndex + '); ' +
-           'if(window.myGrooveWriter) window.myGrooveWriter.updateCurrentURL();">' +
-           '&#9675;</span>';
-  };
+  /* ---- Init on DOMContentLoaded ---- */
+  function init() {
+    injectButtons();
+    observeMeasureContainer();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 
 }());
