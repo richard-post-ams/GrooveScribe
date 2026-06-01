@@ -2965,6 +2965,11 @@ function GrooveUtils() {
 
 				global_total_midi_repeats++;
 
+				// Improvement - progressive metronome: bump BPM every N bars
+				if (window.ProgressiveMetronome && window.ProgressiveMetronome.isEnabled()) {
+					window.ProgressiveMetronome.onRepeat(root);
+				}
+
 				// regenerate the MIDI if the data needs refreshing or the OffsetClick is rotating every time
 				// advanceMetronomeOptionsOffsetClickStartRotation will return false if not rotating
 				if (root.advanceMetronomeOptionsOffsetClickStartRotation() || root.midiEventCallbacks.doesMidiDataNeedRefresh(root.midiEventCallbacks.classRoot)) {
@@ -3345,6 +3350,9 @@ function GrooveUtils() {
 			'				<span class="swingLabel">SWING</span>' +
 			'				<span for="swingAmount" class="swingOutput" id="swingOutput' + root.grooveUtilsUniqueIndex + '">0% swing</span>' +
 			'				<input type=range min=0 max=50 value=0 class="swingInput' + (root.is_touch_device() ? ' touch' : '') + '" id="swingInput' + root.grooveUtilsUniqueIndex + '" list="swingSettings" step=5 >' +
+			'			</div>' +
+			'			<div class="progMetroRow" id="progMetroRow' + root.grooveUtilsUniqueIndex + '">'+
+			'				<span class="progMetroToggle" title="Progressive Metronome" onclick="window.ProgressiveMetronome && window.ProgressiveMetronome.togglePanel()">⏳ PROGRESSIVE</span>'+
 			'			</div>' +
 			'       </span>';
 
