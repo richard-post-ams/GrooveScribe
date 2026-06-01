@@ -811,6 +811,29 @@ function GrooveWriter() {
 
 	var class_cur_all_notes_highlight_id = false;
 
+	// Smooth scroll helper: animate scrollLeft to target in small steps via rAF
+	var _scroll_raf = null;
+	function scroll_smooth_to(el, targetScrollLeft) {
+		if (_scroll_raf) cancelAnimationFrame(_scroll_raf);
+		var start     = el.scrollLeft;
+		var distance  = targetScrollLeft - start;
+		if (Math.abs(distance) < 1) return;
+		var duration  = Math.min(300, Math.max(80, Math.abs(distance) * 0.6)); // ms, scales with distance
+		var startTime = null;
+		function step(timestamp) {
+			if (!startTime) startTime = timestamp;
+			var elapsed  = timestamp - startTime;
+			var progress = Math.min(elapsed / duration, 1);
+			// ease-out quad
+			var ease     = 1 - (1 - progress) * (1 - progress);
+			el.scrollLeft = start + distance * ease;
+			if (progress < 1) {
+				_scroll_raf = requestAnimationFrame(step);
+			}
+		}
+		_scroll_raf = requestAnimationFrame(step);
+	}
+
 	function hilight_all_notes_on_same_beat(instrument, id) {
 
 		id = Math.floor(id);
@@ -833,8 +856,19 @@ function GrooveWriter() {
 		var active_bg = document.getElementById("bg-highlight" + class_cur_all_notes_highlight_id);
 		if (active_bg) {
 			active_bg.style.background = "rgba(50, 126, 173, 0.2)";
-			// Auto-scroll so the active note column stays visible during playback
-			active_bg.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+			// Smooth auto-scroll: nudge the musicalInput container so the active column stays visible
+			var scroll_container = document.getElementById("musicalInput");
+			if (scroll_container) {
+				var col_left  = active_bg.offsetLeft;
+				var col_right = col_left + active_bg.offsetWidth;
+				var vis_left  = scroll_container.scrollLeft;
+				var vis_right = vis_left + scroll_container.clientWidth;
+				// Only scroll when the column is outside the visible window
+				if (col_right > vis_right || col_left < vis_left) {
+					var target = Math.max(0, col_left - 60); // keep 60px of label visible on left
+					scroll_smooth_to(scroll_container, target);
+				}
+			}
 		}
 	}
 
@@ -887,6 +921,12 @@ function GrooveWriter() {
 				bg_ele.style.background = "transparent";
 			}
 			class_cur_all_notes_highlight_id = false;
+		}
+
+		// Scroll back to the start so hi-hat/snare/kick labels are visible
+		var scroll_container = document.getElementById("musicalInput");
+		if (scroll_container && scroll_container.scrollLeft > 0) {
+			scroll_smooth_to(scroll_container, 0);
 		}
 
 	}
