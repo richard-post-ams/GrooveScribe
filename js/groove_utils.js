@@ -2732,6 +2732,11 @@ function GrooveUtils() {
 	// returns a URL that is a MIDI track
 	root.create_MIDIURLFromGrooveData = function (myGrooveData, MIDI_type) {
 
+		// Improvement #6: apply A-B loop slice if active
+		if (window.ABLoop && window.ABLoop.isActive()) {
+			myGrooveData = window.ABLoop.applyToGrooveData(myGrooveData);
+		}
+
 		var midiFile = new Midi.File();
 		var midiTrack = new Midi.Track();
 		midiFile.addTrack(midiTrack);
@@ -3319,7 +3324,9 @@ function GrooveUtils() {
 			'<div id="playerControl' + root.grooveUtilsUniqueIndex + '" class="playerControl">' +
 			'	<div class="playerControlsRow" id="playerControlsRow' + root.grooveUtilsUniqueIndex + '">' +
 			'		<span title="Play/Pause" class="midiPlayImage" id="midiPlayImage' + root.grooveUtilsUniqueIndex + '"></span>' +
-			'       <span class="MIDIPlayTime" id="MIDIPlayTime' + root.grooveUtilsUniqueIndex + '">' + CONSTANT_Midi_play_time_zero + '</span>';
+			'       <span class="MIDIPlayTime" id="MIDIPlayTime' + root.grooveUtilsUniqueIndex + '">' + CONSTANT_Midi_play_time_zero + '</span>' +
+			'       <span id="abLoopIndicator" class="abLoopIndicator"></span>' +
+			'       <span id="abLoopClearBtn" onclick="window.ABLoop && window.ABLoop.clear()"><i class="fa fa-times"></i> A-B</span>';
 
 			if(expandable)
 				newHTML += '' +
