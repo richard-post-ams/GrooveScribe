@@ -1528,12 +1528,33 @@ function GrooveWriter() {
 		} else {
 
 			// this is a non advanced edit left click
+			// Improvement #7: left-click cycles through velocity levels
 			switch (type) {
 				case "hh":
-					set_hh_state(id, is_hh_on(id) ? "off" : "normal", true);
+					// cycle: off -> normal -> accent -> off
+					var hh_cur = get_hh_state(id, "URL");
+					if (hh_cur === false || hh_cur === "-")
+						set_hh_state(id, "normal", true);
+					else if (hh_cur === "x")
+						set_hh_state(id, "accent", true);
+					else if (hh_cur === "X")
+						set_hh_state(id, "off", true);
+					else
+						set_hh_state(id, is_hh_on(id) ? "off" : "normal", true);
 					break;
 				case "snare":
-					set_snare_state(id, is_snare_on(id) ? "off" : "accent", true);
+					// cycle: off -> ghost -> normal -> accent -> off
+					var sn_cur = get_snare_state(id, "URL");
+					if (sn_cur === false || sn_cur === "-")
+						set_snare_state(id, "ghost", true);
+					else if (sn_cur === "g")
+						set_snare_state(id, "normal", true);
+					else if (sn_cur === "o")
+						set_snare_state(id, "accent", true);
+					else if (sn_cur === "O")
+						set_snare_state(id, "off", true);
+					else
+						set_snare_state(id, is_snare_on(id) ? "off" : "normal", true);
 					break;
 				case "tom1":
 					set_tom_state(id, 1, is_tom_on(id, 1) ? "off" : "normal", true);
