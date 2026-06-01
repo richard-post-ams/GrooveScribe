@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrooveScribe — New Features</title>
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700,300" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lato', Calibri, sans-serif;
+      background: #1e1e1e;
+      color: #e0e0e0;
+      padding: 40px 24px 80px;
+      line-height: 1.6;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 48px;
+      border-bottom: 2px solid #f5821f;
+      padding-bottom: 24px;
+    }
+
+    header img {
+      height: 52px;
+    }
+
+    header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f5821f;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      font-size: 14px;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #f5821f;
+      margin-bottom: 20px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px;
+      margin-bottom: 56px;
+    }
+
+    .feature-card {
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      border-left: 4px solid #f5821f;
+      border-radius: 6px;
+      padding: 20px 22px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .feature-card:hover {
+      background: #303030;
+      border-left-color: #ffaa44;
+    }
+
+    .feature-card.done {
+      border-left-color: #4caf50;
+      opacity: 0.9;
+    }
+
+    .feature-card.done:hover {
+      border-left-color: #66bb6a;
+    }
+
+    .feature-card.in-progress {
+      border-left-color: #2196f3;
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .feature-number {
+      font-size: 26px;
+      font-weight: 700;
+      color: #555;
+      line-height: 1;
+      min-width: 32px;
+    }
+
+    .feature-card.done .feature-number { color: #4caf50; }
+    .feature-card.in-progress .feature-number { color: #2196f3; }
+
+    .feature-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #f0f0f0;
+      line-height: 1.3;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: #aaa;
+      margin-left: 46px;
+      margin-bottom: 12px;
+    }
+
+    .feature-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: 46px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 3px;
+    }
+
+    .badge-done    { background: #1b4a1c; color: #4caf50; }
+    .badge-wip     { background: #0d2e4a; color: #2196f3; }
+    .badge-planned { background: #3a2a00; color: #f5a623; }
+
+    .commit-link {
+      font-size: 12px;
+      color: #666;
+      text-decoration: none;
+      font-family: monospace;
+    }
+
+    .commit-link:hover { color: #f5821f; text-decoration: underline; }
+
+    .files-changed {
+      font-size: 12px;
+      color: #666;
+      margin-left: 46px;
+      margin-top: 6px;
+    }
+
+    .files-changed code {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-size: 11px;
+      color: #bbb;
+      margin-right: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #888;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    .legend-dot.done     { background: #4caf50; }
+    .legend-dot.wip      { background: #2196f3; }
+    .legend-dot.planned  { background: #f5821f; }
+
+    footer {
+      margin-top: 60px;
+      padding-top: 20px;
+      border-top: 1px solid #333;
+      font-size: 12px;
+      color: #555;
+    }
+
+    footer a { color: #f5821f; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>GrooveScribe — New Features</h1>
+    <p>Fork: <a href="https://github.com/richard-post-ams/GrooveScribe" style="color:#f5821f;text-decoration:none;">github.com/richard-post-ams/GrooveScribe</a> &nbsp;·&nbsp; Last updated: June 1, 2026</p>
+  </div>
+</header>
+
+<p class="section-title">Status Legend</p>
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot done"></div> Shipped</div>
+  <div class="legend-item"><div class="legend-dot wip"></div> In Progress</div>
+  <div class="legend-item"><div class="legend-dot planned"></div> Planned</div>
+</div>
+
+<p class="section-title">Shipped Features</p>
+<div class="features-grid">
+
+  <div class="feature-card done">
+    <div class="feature-header">
+      <div class="feature-number">4</div>
+      <div class="feature-title">Web Audio API Drum Sampler — Better Sound Quality</div>
+    </div>
+    <div class="feature-desc">
+      Replaces the thin MIDI.js soundfont with higher-quality OGG drum samples loaded via the Web Audio API.
+      Covers kick, snare, hi-hat (open/closed/foot), toms, crash, ride, and rimshot using the FatBoy GM soundfont (CC0).
+      Falls back silently to the original MIDI.js playback if the sampler is not yet loaded.
+    </div>
+    <div class="feature-meta">
+      <span class="badge badge-done">Shipped</span>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/46f6f28" target="_blank">#46f6f28</a>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/f34db2e" target="_blank">#f34db2e</a>
+    </div>
+    <div class="files-changed">
+      <code>js/better_sounds.js</code>
+      <code>js/groove_utils.js</code>
+      <code>index.html</code>
+    </div>
+  </div>
+
+  <div class="feature-card done">
+    <div class="feature-number" style="display:none">5</div>
+    <div class="feature-header">
+      <div class="feature-number">5</div>
+      <div class="feature-title">Mobile Responsive Layout</div>
+    </div>
+    <div class="feature-desc">
+      Makes GrooveScribe usable on phones and tablets.
+      Removes the hard 800px min-width, stacks the left nav horizontally on small screens,
+      adds 44px+ tap targets on all note buttons, enables horizontal scroll on the note grid,
+      prevents iOS input zoom, and adds touch-action manipulation to stop double-tap zoom.
+      Three breakpoints: tablet (&le;900px), phone (&le;480px), and coarse-pointer (touch) devices.
+    </div>
+    <div class="feature-meta">
+      <span class="badge badge-done">Shipped</span>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/c1c84e2" target="_blank">#c1c84e2</a>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/63615f5" target="_blank">#63615f5</a>
+    </div>
+    <div class="files-changed">
+      <code>css/mobile_responsive.css</code>
+      <code>index.html</code>
+    </div>
+  </div>
+
+</div>
+
+<p class="section-title">Planned Features</p>
+<div class="features-grid">
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">1</div>
+      <div class="feature-title">Fix 10-Measure Cap</div>
+    </div>
+    <div class="feature-desc">
+      The app hard-stops at 10 measures. Remove the hard-coded measure limit in
+      <code style="color:#bbb;font-size:12px">groove_writer.js</code> so longer grooves,
+      fill sequences, and full song charts can be written.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">2</div>
+      <div class="feature-title">Fix Broken Share Links (Firebase Deprecation)</div>
+    </div>
+    <div class="feature-desc">
+      Firebase Dynamic Links was deprecated August 2025. The Share button is currently broken.
+      Replace with a self-hosted redirect or a lightweight URL shortener alternative.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">3</div>
+      <div class="feature-title">PWA / Offline-First Support</div>
+    </div>
+    <div class="feature-desc">
+      Add a service worker and web app manifest so GrooveScribe works offline in rehearsal spaces
+      and can be installed to the home screen. The fully client-side architecture already supports this.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">6</div>
+      <div class="feature-title">Loop Section / A-B Repeat for Practice</div>
+    </div>
+    <div class="feature-desc">
+      Add a visual A-B loop selector so you can mark any subset of measures and drill just that section.
+      Standard feature in every serious practice tool (Transcribe!, Amazing Slow Downer).
+      Currently the player only loops the entire groove from start to end.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">7</div>
+      <div class="feature-title">Note Velocity / Ghost Notes / Accents</div>
+    </div>
+    <div class="feature-desc">
+      Every hit is currently binary: on or off. Add three velocity levels per note
+      (ghost, normal, accent) via right-click or long-press. The ABC notation renderer
+      already supports dynamics via <code style="color:#bbb;font-size:12px">!p!</code>,
+      <code style="color:#bbb;font-size:12px">!mf!</code>,
+      <code style="color:#bbb;font-size:12px">!f!</code> decorators.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">8</div>
+      <div class="feature-title">Multi-Step Undo / Redo Stack</div>
+    </div>
+    <div class="feature-desc">
+      The current UI has a single-step Undo button. Replace with a full multi-step undo/redo stack
+      (Ctrl+Z / Ctrl+Y) so no work is lost from a single misclick during complex groove authoring.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">9</div>
+      <div class="feature-title">Extended Tuplet Support</div>
+    </div>
+    <div class="feature-desc">
+      The UI offers 1/8 and 1/16 triplets but no quintuplets, septuplets, or other tuplets.
+      The abc2svg renderer already supports arbitrary tuplets. The fix is in the writer UI grid logic,
+      not the renderer.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-header">
+      <div class="feature-number">10</div>
+      <div class="feature-title">Local Groove Library with Save / Load</div>
+    </div>
+    <div class="feature-desc">
+      Currently saving means copying a URL. Add a localStorage-based groove library with
+      names, tags, and timestamps. Turns GrooveScribe from a scratchpad into a personal
+      practice database for storing exercises, teacher-assigned grooves, and setlist patterns.
+    </div>
+    <div class="feature-meta"><span class="badge badge-planned">Planned</span></div>
+  </div>
+
+</div>
+
+<footer>
+  Fork of <a href="https://github.com/montulli/GrooveScribe" target="_blank">montulli/GrooveScribe</a> by Lou Montulli &amp; Mike Johnston — GPL v2.0 &nbsp;·&nbsp;
+  Improvements by <a href="https://github.com/richard-post-ams" target="_blank">richard-post-ams</a>
+</footer>
+
+</body>
+</html>
