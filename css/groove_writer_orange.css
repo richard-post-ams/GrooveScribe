@@ -1234,3 +1234,29 @@
 			width: 100% !important;
 		}
 	}
+
+	/* GrooveMaster inline text logo */
+	#logoTextHTML {
+		display: inline-flex;
+		flex-direction: column;
+		line-height: 1;
+		vertical-align: middle;
+		gap: 0px;
+	}
+	#logoGroove {
+		font-size: 14px;
+		font-weight: 900;
+		letter-spacing: 2px;
+		color: #62C04C;
+		font-family: Arial Black, Arial, sans-serif;
+		text-transform: uppercase;
+	}
+	#logoMaster {
+		font-size: 14px;
+		font-weight: 900;
+		letter-spacing: 2px;
+		color: #FFFFFF;
+		font-family: Arial Black, Arial, sans-serif;
+		text-transform: uppercase;
+	}
+
