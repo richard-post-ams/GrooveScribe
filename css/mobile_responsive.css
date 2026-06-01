@@ -1,0 +1,143 @@
+/* =======================================================
+ * GrooveScribe Mobile Responsive CSS
+ * Improvement #5: Mobile-first responsive layout
+ * Adds touch targets, scrollable grid, stacked layout
+ * ======================================================= */
+
+/* Tablet and below (<=900px) */
+@media only screen and (max-width: 900px) {
+  #GrooveWriter { min-width: 0 !important; }
+
+  #LeftHandNav {
+    width: 100% !important;
+    height: auto !important;
+    position: relative !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    border-right: none !important;
+    border-bottom: 2px solid #000 !important;
+    z-index: 999 !important;
+  }
+  #divisionButtonContainer {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    width: 100% !important;
+  }
+  .left-button {
+    display: inline-flex !important;
+    width: auto !important;
+    min-width: 56px !important;
+    height: 44px !important;
+    padding: 0 8px !important;
+  }
+  .left-button-content {
+    height: 44px !important;
+    min-height: 44px !important;
+    font-size: 11px !important;
+    padding: 0 4px !important;
+  }
+  #TopNav {
+    position: relative !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 48px !important;
+    flex-wrap: wrap !important;
+  }
+  #midiPlayer { width: 100% !important; }
+  #RightHandContent {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  #sheetMusicDiv {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .svgTarget svg { min-width: 600px !important; }
+  #musicalInput {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    white-space: nowrap !important;
+  }
+  /* Larger tap targets for note buttons */
+  .hi-hat, .snare, .kick, .tom, .sticking {
+    width: 38px !important;
+    min-height: 44px !important;
+    margin-right: 3px !important;
+    margin-left: 3px !important;
+  }
+  .line-labels {
+    width: 64px !important;
+    font-size: 14px !important;
+    min-width: 64px !important;
+  }
+  #sheetMusicTextFields {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    padding: 8px !important;
+  }
+  /* Prevent iOS zoom on input focus */
+  .sheetMusicInputField {
+    flex: 1 !important;
+    min-width: 0 !important;
+    font-size: 16px !important;
+  }
+  #upperRight {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+  .rightButtons { font-size: 13px !important; padding: 4px 8px !important; }
+  #logoTextUpperLeft img { height: 28px !important; }
+  #logoInSubdivision img { height: 28px !important; }
+}
+
+/* Phone only (<=480px) */
+@media only screen and (max-width: 480px) {
+  .left-button { min-width: 48px !important; }
+  .left-button-content { font-size: 10px !important; }
+  /* Even larger tap targets on phone */
+  .hi-hat, .snare, .kick, .tom, .sticking {
+    width: 44px !important;
+    min-height: 48px !important;
+    margin-right: 2px !important;
+    margin-left: 2px !important;
+  }
+  .line-labels {
+    font-size: 12px !important;
+    width: 56px !important;
+    min-width: 56px !important;
+  }
+  #metronomeContainer {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    align-items: center !important;
+  }
+  .metronomeButton {
+    min-width: 36px !important;
+    text-align: center !important;
+    padding: 4px 6px !important;
+  }
+  input[type=range] { width: 100% !important; }
+}
+
+/* Touch devices: prevent double-tap zoom, improve feel */
+@media (pointer: coarse) {
+  .hi-hat, .snare, .kick, .tom, .sticking {
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+    cursor: pointer !important;
+  }
+  .hi-hat:active, .snare:active, .kick:active, .tom:active {
+    opacity: 0.75 !important;
+  }
+}
