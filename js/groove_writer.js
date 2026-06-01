@@ -859,15 +859,18 @@ function GrooveWriter() {
 			// Smooth auto-scroll: start scrolling one bar ahead so notes are visible before playing
 			var scroll_container = document.getElementById("musicalInput");
 			if (scroll_container) {
-				var col_left   = active_bg.offsetLeft;
-				var col_right  = col_left + active_bg.offsetWidth;
+				// Use getBoundingClientRect to get position relative to scroll container
+				var cont_rect  = scroll_container.getBoundingClientRect();
+				var col_rect   = active_bg.getBoundingClientRect();
+				// Position of column inside the scroll container
+				var col_left   = col_rect.left  - cont_rect.left + scroll_container.scrollLeft;
+				var col_right  = col_rect.right - cont_rect.left + scroll_container.scrollLeft;
 				var vis_left   = scroll_container.scrollLeft;
 				var vis_right  = vis_left + scroll_container.clientWidth;
-				// Calculate the width of one bar: total scroll width divided by number of measures
+				// One bar lookahead: scroll this many px before the column reaches the right edge
 				var one_bar_px = scroll_container.scrollWidth / Math.max(1, class_number_of_measures);
-				// Start scrolling one bar before the column would go off the right edge
 				if ((col_right + one_bar_px) > vis_right || col_left < vis_left) {
-					var target = Math.max(0, col_left - 60); // keep 60px label padding on left
+					var target = Math.max(0, col_left - 60); // 60px left-side label padding
 					scroll_smooth_to(scroll_container, target);
 				}
 			}
