@@ -856,16 +856,18 @@ function GrooveWriter() {
 		var active_bg = document.getElementById("bg-highlight" + class_cur_all_notes_highlight_id);
 		if (active_bg) {
 			active_bg.style.background = "rgba(50, 126, 173, 0.2)";
-			// Smooth auto-scroll: nudge the musicalInput container so the active column stays visible
+			// Smooth auto-scroll: start scrolling one bar ahead so notes are visible before playing
 			var scroll_container = document.getElementById("musicalInput");
 			if (scroll_container) {
-				var col_left  = active_bg.offsetLeft;
-				var col_right = col_left + active_bg.offsetWidth;
-				var vis_left  = scroll_container.scrollLeft;
-				var vis_right = vis_left + scroll_container.clientWidth;
-				// Only scroll when the column is outside the visible window
-				if (col_right > vis_right || col_left < vis_left) {
-					var target = Math.max(0, col_left - 60); // keep 60px of label visible on left
+				var col_left   = active_bg.offsetLeft;
+				var col_right  = col_left + active_bg.offsetWidth;
+				var vis_left   = scroll_container.scrollLeft;
+				var vis_right  = vis_left + scroll_container.clientWidth;
+				// Calculate the width of one bar: total scroll width divided by number of measures
+				var one_bar_px = scroll_container.scrollWidth / Math.max(1, class_number_of_measures);
+				// Start scrolling one bar before the column would go off the right edge
+				if ((col_right + one_bar_px) > vis_right || col_left < vis_left) {
+					var target = Math.max(0, col_left - 60); // keep 60px label padding on left
 					scroll_smooth_to(scroll_container, target);
 				}
 			}
