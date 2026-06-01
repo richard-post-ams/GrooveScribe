@@ -1,0 +1,125 @@
+/* =======================================================
+ * GrooveScribe A-B Loop CSS - Improvement #6
+ * ======================================================= */
+
+/* A/B marker button per measure */
+.ab-loop-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #888;
+  background: transparent;
+  border: 1px solid #555;
+  margin-left: 6px;
+  vertical-align: middle;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  user-select: none;
+  -webkit-user-select: none;
+  line-height: 1;
+  font-family: 'Lato', sans-serif;
+  flex-shrink: 0;
+}
+
+.ab-loop-btn:hover {
+  background: #444;
+  color: #fff;
+  border-color: #f5821f;
+}
+
+/* A marker */
+.ab-loop-btn.ab-a {
+  background: #2e7d32;
+  color: #fff;
+  border-color: #4caf50;
+}
+
+.ab-loop-btn.ab-a:hover {
+  background: #388e3c;
+}
+
+/* B marker */
+.ab-loop-btn.ab-b {
+  background: #1565c0;
+  color: #fff;
+  border-color: #42a5f5;
+}
+
+.ab-loop-btn.ab-b:hover {
+  background: #1976d2;
+}
+
+/* Measures inside A-B range */
+.ab-loop-btn.ab-range {
+  background: #1a2e1a;
+  color: #4caf50;
+  border-color: #2e7d32;
+}
+
+/* Staff container highlight when inside A-B range */
+.staff-container.ab-in-range {
+  outline: 2px solid rgba(76, 175, 80, 0.35);
+  outline-offset: -2px;
+}
+
+.staff-container.ab-start-marker {
+  outline: 2px solid #4caf50;
+  outline-offset: -2px;
+}
+
+.staff-container.ab-end-marker {
+  outline: 2px solid #42a5f5;
+  outline-offset: -2px;
+}
+
+/* A-B status indicator in the player bar */
+#abLoopIndicator {
+  display: none;
+  background: #1a2e1a;
+  color: #4caf50;
+  border: 1px solid #2e7d32;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 9px;
+  margin-left: 10px;
+  vertical-align: middle;
+  font-family: 'Lato', sans-serif;
+}
+
+/* Clear A-B loop button */
+#abLoopClearBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: #3a1a1a;
+  color: #e88;
+  border: 1px solid #7a2020;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  cursor: pointer;
+  margin-left: 6px;
+  font-family: 'Lato', sans-serif;
+  transition: background 0.15s;
+}
+
+#abLoopClearBtn:hover {
+  background: #5a1a1a;
+}
+
+/* Mobile: slightly larger tap targets */
+@media only screen and (max-width: 480px) {
+  .ab-loop-btn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+}
