@@ -815,10 +815,14 @@ function GrooveWriter() {
 	var _scroll_raf = null;
 	function scroll_smooth_to(el, targetScrollLeft) {
 		if (_scroll_raf) cancelAnimationFrame(_scroll_raf);
-		var start     = el.scrollLeft;
-		var distance  = targetScrollLeft - start;
-		if (Math.abs(distance) < 1) return;
-		var duration  = Math.min(300, Math.max(80, Math.abs(distance) * 0.6)); // ms, scales with distance
+		var start    = el.scrollLeft;
+		var distance = targetScrollLeft - start;
+		// For very small distances just snap immediately
+		if (Math.abs(distance) < 2) {
+			el.scrollLeft = targetScrollLeft;
+			return;
+		}
+		var duration  = Math.min(300, Math.max(80, Math.abs(distance) * 0.6));
 		var startTime = null;
 		function step(timestamp) {
 			if (!startTime) startTime = timestamp;
@@ -829,6 +833,9 @@ function GrooveWriter() {
 			el.scrollLeft = start + distance * ease;
 			if (progress < 1) {
 				_scroll_raf = requestAnimationFrame(step);
+			} else {
+				// Snap exactly to target to avoid floating point residual
+				el.scrollLeft = targetScrollLeft;
 			}
 		}
 		_scroll_raf = requestAnimationFrame(step);
@@ -928,10 +935,11 @@ function GrooveWriter() {
 			class_cur_all_notes_highlight_id = false;
 		}
 
-		// Scroll back to the start so hi-hat/snare/kick labels are visible
+		// Hard-reset to exactly 0 so no whitespace remains left of the labels
 		var scroll_container = document.getElementById("musicalInput");
-		if (scroll_container && scroll_container.scrollLeft > 0) {
-			scroll_smooth_to(scroll_container, 0);
+		if (scroll_container) {
+			if (_scroll_raf) cancelAnimationFrame(_scroll_raf);
+			scroll_container.scrollLeft = 0;
 		}
 
 	}
