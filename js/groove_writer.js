@@ -4489,9 +4489,6 @@ function GrooveWriter() {
 		else
 			newHTML += '<span class="closeMeasureButton"><i class="fa">&nbsp;&nbsp;&nbsp;</i></span>';
 
-		// Improvement #6: A-B loop marker button
-		if (window.ABLoop)
-			newHTML += window.ABLoop.buttonHTML(baseindex);
 
 
 		if (baseindex == class_number_of_measures) // add new measure button
