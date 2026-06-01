@@ -1,0 +1,208 @@
+/* =======================================================
+ * GrooveScribe Groove Library Panel - Improvement #10
+ * ======================================================= */
+
+#grooveLibraryPanel {
+  position: fixed;
+  top: 60px;
+  right: 16px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 80px);
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  z-index: 10000;
+  display: none;
+  flex-direction: column;
+  font-family: 'Lato', Calibri, sans-serif;
+  color: #e0e0e0;
+  overflow: hidden;
+}
+
+.gl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 12px;
+  background: linear-gradient(to right, #f5821f, #e06a00);
+  border-radius: 8px 8px 0 0;
+  flex-shrink: 0;
+}
+
+.gl-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.gl-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 2px;
+  opacity: 0.85;
+  transition: opacity 0.15s;
+}
+.gl-close:hover { opacity: 1; }
+
+.gl-save-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid #3a3a3a;
+  flex-shrink: 0;
+  background: #252525;
+}
+
+.gl-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 8px;
+  border-bottom: 1px solid #333;
+  flex-shrink: 0;
+}
+
+.gl-count {
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.gl-input {
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #e0e0e0;
+  font-size: 13px;
+  padding: 7px 10px;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+  font-family: 'Lato', Calibri, sans-serif;
+}
+.gl-input:focus { border-color: #f5821f; }
+.gl-input::placeholder { color: #555; }
+
+.gl-btn {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  transition: background 0.15s, opacity 0.15s;
+  font-family: 'Lato', Calibri, sans-serif;
+  letter-spacing: 0.3px;
+}
+
+.gl-btn-save {
+  background: #f5821f;
+  color: #fff;
+  font-size: 13px;
+  padding: 8px 14px;
+}
+.gl-btn-save:hover { background: #e06a00; }
+
+.gl-btn-load {
+  background: #2e5c8a;
+  color: #fff;
+}
+.gl-btn-load:hover { background: #3a7abd; }
+
+.gl-btn-del {
+  background: #5a2020;
+  color: #e88;
+}
+.gl-btn-del:hover { background: #7a2020; }
+
+.gl-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 6px 0;
+}
+
+.gl-empty {
+  padding: 24px 20px;
+  color: #666;
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.gl-row {
+  padding: 10px 16px;
+  border-bottom: 1px solid #333;
+  transition: background 0.12s;
+}
+.gl-row:hover { background: #303030; }
+.gl-row:last-child { border-bottom: none; }
+
+.gl-row-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.gl-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f0f0f0;
+  cursor: default;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gl-date {
+  font-size: 11px;
+  color: #555;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.gl-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.gl-tag {
+  font-size: 11px;
+  background: #1a3a1a;
+  color: #6dbf6d;
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+
+.gl-row-actions {
+  display: flex;
+  gap: 6px;
+}
+
+/* Library button in bottom toolbar */
+#libraryButton .bottomButtonIcon i { color: inherit; }
+
+/* Mobile: full-width panel */
+@media only screen and (max-width: 480px) {
+  #grooveLibraryPanel {
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
