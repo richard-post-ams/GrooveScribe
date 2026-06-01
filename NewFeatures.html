@@ -346,7 +346,7 @@
     </div>
     <div class="feature-desc">
       Left-clicking a note now cycles through velocity levels instead of just toggling on/off.
-      <b>Snare:</b> off &rarr; ghost &rarr; normal &rarr; accent &rarr; off.
+      <b>Snare:</b> off &rarr; normal &rarr; accent &rarr; ghost &rarr; off.
       <b>Hi-hat:</b> off &rarr; normal &rarr; accent &rarr; off.
       Ghost notes play at velocity 50, normal at 85, accent at 120 — matching the existing
       MIDI velocity constants. All existing right-click context menu options remain unchanged.
@@ -358,6 +358,32 @@
     </div>
     <div class="files-changed">
       <code>js/groove_writer.js</code>
+    </div>
+  </div>
+
+  <div class="feature-card done">
+    <div class="feature-header">
+      <div class="feature-number">11</div>
+      <div class="feature-title">Progressive Metronome</div>
+    </div>
+    <div class="feature-desc">
+      Click <b>&#x23F3; PROGRESSIVE</b> in the player bar to open the settings panel.
+      Configure four values with stepper buttons (hold for rapid change):
+      <b>Increase by</b> (BPM per step), <b>Every</b> (bars between steps),
+      <b>Start BPM</b>, and <b>Max BPM</b>. Toggle <b>Enable</b> to activate.
+      When enabled, tempo automatically rises every N bars until Max BPM is reached.
+      A status line shows current BPM and bars until the next bump. Disabled by default.
+    </div>
+    <div class="feature-meta">
+      <span class="badge badge-done">Shipped</span>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/035bf2b" target="_blank">#035bf2b</a>
+      <a class="commit-link" href="https://github.com/richard-post-ams/GrooveScribe/commit/8f4513c" target="_blank">#8f4513c</a>
+    </div>
+    <div class="files-changed">
+      <code>js/progressive_metro.js</code>
+      <code>css/progressive_metro.css</code>
+      <code>js/groove_utils.js</code>
+      <code>index.html</code>
     </div>
   </div>
 
