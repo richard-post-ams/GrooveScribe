@@ -1,0 +1,196 @@
+/* =======================================================
+ * Progressive Metronome Panel CSS
+ * ======================================================= */
+
+/* Trigger button in the player bar */
+.progMetroRow {
+  display: flex;
+  align-items: center;
+  padding: 2px 0 0 2px;
+}
+
+.progMetroToggle {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #888;
+  cursor: pointer;
+  padding: 3px 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: transparent;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  user-select: none;
+  white-space: nowrap;
+  font-family: 'Lato', Calibri, sans-serif;
+}
+
+.progMetroToggle:hover {
+  color: #f5821f;
+  border-color: #f5821f;
+  background: rgba(245, 130, 31, 0.08);
+}
+
+/* Main panel */
+#progMetroPanel {
+  display: none;
+  position: fixed;
+  top: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.65);
+  z-index: 10001;
+  font-family: 'Lato', Calibri, sans-serif;
+  color: #e0e0e0;
+  overflow: hidden;
+}
+
+.pm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px 10px;
+  background: linear-gradient(to right, #f5821f, #e06a00);
+  border-radius: 8px 8px 0 0;
+}
+
+.pm-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+.pm-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  opacity: 0.85;
+}
+.pm-close:hover { opacity: 1; }
+
+.pm-body {
+  padding: 12px 16px 16px;
+}
+
+.pm-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid #333;
+}
+
+.pm-row:last-child { border-bottom: none; }
+
+.pm-row-enable {
+  margin-top: 4px;
+  padding-top: 10px;
+}
+
+.pm-label {
+  font-size: 13px;
+  color: #ccc;
+  flex: 1;
+}
+
+/* Stepper: - value + */
+.pm-stepper {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid #444;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.pm-step-btn {
+  background: #333;
+  border: none;
+  color: #e0e0e0;
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+  user-select: none;
+  touch-action: manipulation;
+  font-family: 'Lato', sans-serif;
+  line-height: 1;
+}
+
+.pm-step-btn:hover { background: #555; }
+.pm-step-btn:active { background: #f5821f; color: #fff; }
+
+.pm-val {
+  min-width: 40px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #f0f0f0;
+  background: #1e1e1e;
+  padding: 0 6px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid #444;
+  border-right: 1px solid #444;
+}
+
+/* Enable toggle button */
+.pm-toggle-btn {
+  min-width: 56px;
+  padding: 6px 14px;
+  border-radius: 5px;
+  border: 1px solid #555;
+  background: #333;
+  color: #aaa;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  font-family: 'Lato', Calibri, sans-serif;
+}
+
+.pm-toggle-btn.pm-toggle-on {
+  background: #1b4a1c;
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+.pm-toggle-btn:hover {
+  background: #444;
+}
+
+.pm-toggle-btn.pm-toggle-on:hover {
+  background: #255227;
+}
+
+/* Status line */
+.pm-status {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #f5821f;
+  min-height: 16px;
+  text-align: center;
+}
+
+/* Mobile */
+@media only screen and (max-width: 480px) {
+  #progMetroPanel {
+    width: calc(100vw - 32px);
+    top: 50px;
+  }
+}
