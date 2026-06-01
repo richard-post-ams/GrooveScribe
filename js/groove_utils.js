@@ -3010,6 +3010,10 @@ function GrooveUtils() {
 				if (root.noteCallback) {
 					root.noteCallback(note_type);
 				}
+				// Improvement #4: route note to Web Audio API sampler if available
+				if (window.BetterSounds && window.BetterSounds.isReady()) {
+					window.BetterSounds.playMidiNote(data.note, data.velocity);
+				}
 			}
 		}
 
