@@ -4,7 +4,7 @@
 
 /* A/B marker button per measure */
 .ab-loop-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 22px;
@@ -14,16 +14,19 @@
   font-weight: 700;
   cursor: pointer;
   color: #888;
-  background: transparent;
-  border: 1px solid #555;
-  margin-left: 6px;
-  vertical-align: middle;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #aaa;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   user-select: none;
   -webkit-user-select: none;
   line-height: 1;
   font-family: 'Lato', sans-serif;
-  flex-shrink: 0;
+  /* Float centred above the bar */
+  position: absolute;
+  top: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
 }
 
 .ab-loop-btn:hover {
@@ -176,3 +179,8 @@
   font-family: 'Lato', Calibri, sans-serif;
 }
 
+
+/* Ensure staff-container is a positioning context for the A-B button */
+.staff-container {
+  position: relative;
+}
