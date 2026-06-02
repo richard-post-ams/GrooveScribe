@@ -29,7 +29,7 @@
 
 	}
 	.fullWidthEle {
-		max-width: 1478px; /* 1550 - 72 */
+		max-width: 100%;
 	}
 	.warnings {
 		font-family: monospace;
