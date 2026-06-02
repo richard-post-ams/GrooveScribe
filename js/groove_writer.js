@@ -829,9 +829,9 @@ function GrooveWriter() {
 		if (!el) return;
 
 		// Remove any existing clone
-		infinite_scroll_stop(false); // stop loop but do not reset scrollLeft
+		infinite_scroll_stop(false);
 
-		// Build clone of measureContainer and append it
+		// Build clone of measureContainer and append it for seamless looping
 		var orig = document.getElementById("measureContainer");
 		if (!orig) return;
 
@@ -839,35 +839,51 @@ function GrooveWriter() {
 
 		var clone = orig.cloneNode(true);
 		clone.id = "measureContainerClone";
-		// Clone must sit inline after the original
 		clone.style.display = "inline-block";
 		orig.style.display  = "inline-block";
 		el.style.whiteSpace = "nowrap";
 		el.appendChild(clone);
 		_scroll_clone = clone;
 
-		// Scroll speed: pixels per ms = groove_width / groove_duration_ms
-		// groove_duration_ms = (beats_per_measure * number_of_measures / BPM) * 60000
-		var tempo       = myGrooveWriter.myGrooveUtils.getTempo();
-		var beats       = class_num_beats_per_measure * class_number_of_measures;
-		var duration_ms = (beats / tempo) * 60000;
-		var px_per_ms   = _scroll_orig_width / duration_ms;
+		// Timing: px/ms so the active note moves across the full groove width in exactly one loop
+		var tempo        = myGrooveWriter.myGrooveUtils.getTempo();
+		var beats        = class_num_beats_per_measure * class_number_of_measures;
+		var duration_ms  = (beats / tempo) * 60000;
+		var px_per_ms    = _scroll_orig_width / duration_ms;
+
+		// Hold-off: first 2 bars stay static, then start centring the active note
+		var bar_duration_ms  = duration_ms / class_number_of_measures;
+		var holdoff_ms       = bar_duration_ms * 2;
+		var holdoff_px       = px_per_ms * holdoff_ms; // groove pixels covered in 2 bars
+		var half_width       = el.clientWidth / 2;
 
 		_scroll_active  = true;
 		_scroll_last_ts = null;
+		var elapsed_ms  = 0; // total playback time since start
 
 		function loop(timestamp) {
 			if (!_scroll_active) return;
 			if (_scroll_last_ts === null) _scroll_last_ts = timestamp;
-			var delta = timestamp - _scroll_last_ts;
+			var delta    = timestamp - _scroll_last_ts;
 			_scroll_last_ts = timestamp;
+			elapsed_ms  += delta;
 
-			el.scrollLeft += px_per_ms * delta;
+			// Current playback position in groove pixels (wraps every orig_width)
+			var play_px  = (px_per_ms * elapsed_ms) % _scroll_orig_width;
 
-			// When we have scrolled past the original content, teleport back silently
-			if (el.scrollLeft >= _scroll_orig_width) {
-				el.scrollLeft -= _scroll_orig_width;
+			var target;
+			if (elapsed_ms < holdoff_ms) {
+				// First 2 bars: no scroll
+				target = 0;
+			} else {
+				// Centre the active note: scroll so play_px sits at mid-screen
+				target = play_px - half_width;
+				if (target < 0) target = 0;
 			}
+
+			// Apply target scrollLeft; seamless wrap when target exceeds orig_width
+			if (target >= _scroll_orig_width) target -= _scroll_orig_width;
+			el.scrollLeft = target;
 
 			_scroll_raf = requestAnimationFrame(loop);
 		}
