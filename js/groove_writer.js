@@ -811,34 +811,86 @@ function GrooveWriter() {
 
 	var class_cur_all_notes_highlight_id = false;
 
-	// Smooth scroll helper: animate scrollLeft to target in small steps via rAF
-	var _scroll_raf = null;
-	function scroll_smooth_to(el, targetScrollLeft) {
-		if (_scroll_raf) cancelAnimationFrame(_scroll_raf);
-		var start    = el.scrollLeft;
-		var distance = targetScrollLeft - start;
-		// For very small distances just snap immediately
-		if (Math.abs(distance) < 2) {
-			el.scrollLeft = targetScrollLeft;
-			return;
-		}
-		var duration  = Math.min(300, Math.max(80, Math.abs(distance) * 0.6));
-		var startTime = null;
-		function step(timestamp) {
-			if (!startTime) startTime = timestamp;
-			var elapsed  = timestamp - startTime;
-			var progress = Math.min(elapsed / duration, 1);
-			// ease-out quad
-			var ease     = 1 - (1 - progress) * (1 - progress);
-			el.scrollLeft = start + distance * ease;
-			if (progress < 1) {
-				_scroll_raf = requestAnimationFrame(step);
-			} else {
-				// Snap exactly to target to avoid floating point residual
-				el.scrollLeft = targetScrollLeft;
+	// ---------------------------------------------------------------
+	// Infinite seamless scroll engine
+	// Runs a tempo-locked rAF loop. Clones the measure grid and appends
+	// it so content repeats endlessly. When scrollLeft reaches the end
+	// of the original content it teleports back silently - seamless
+	// because the clone is identical.
+	// ---------------------------------------------------------------
+	var _scroll_raf        = null;
+	var _scroll_clone      = null;
+	var _scroll_orig_width = 0;
+	var _scroll_last_ts    = null;
+	var _scroll_active     = false;
+
+	function infinite_scroll_start() {
+		var el = document.getElementById("musicalInput");
+		if (!el) return;
+
+		// Remove any existing clone
+		infinite_scroll_stop(false); // stop loop but do not reset scrollLeft
+
+		// Build clone of measureContainer and append it
+		var orig = document.getElementById("measureContainer");
+		if (!orig) return;
+
+		_scroll_orig_width = orig.scrollWidth;
+
+		var clone = orig.cloneNode(true);
+		clone.id = "measureContainerClone";
+		// Clone must sit inline after the original
+		clone.style.display = "inline-block";
+		orig.style.display  = "inline-block";
+		el.style.whiteSpace = "nowrap";
+		el.appendChild(clone);
+		_scroll_clone = clone;
+
+		// Scroll speed: pixels per ms = groove_width / groove_duration_ms
+		// groove_duration_ms = (beats_per_measure * number_of_measures / BPM) * 60000
+		var tempo       = myGrooveWriter.myGrooveUtils.getTempo();
+		var beats       = class_num_beats_per_measure * class_number_of_measures;
+		var duration_ms = (beats / tempo) * 60000;
+		var px_per_ms   = _scroll_orig_width / duration_ms;
+
+		_scroll_active  = true;
+		_scroll_last_ts = null;
+
+		function loop(timestamp) {
+			if (!_scroll_active) return;
+			if (_scroll_last_ts === null) _scroll_last_ts = timestamp;
+			var delta = timestamp - _scroll_last_ts;
+			_scroll_last_ts = timestamp;
+
+			el.scrollLeft += px_per_ms * delta;
+
+			// When we have scrolled past the original content, teleport back silently
+			if (el.scrollLeft >= _scroll_orig_width) {
+				el.scrollLeft -= _scroll_orig_width;
 			}
+
+			_scroll_raf = requestAnimationFrame(loop);
 		}
-		_scroll_raf = requestAnimationFrame(step);
+		_scroll_raf = requestAnimationFrame(loop);
+	}
+
+	function infinite_scroll_stop(reset) {
+		_scroll_active = false;
+		if (_scroll_raf) { cancelAnimationFrame(_scroll_raf); _scroll_raf = null; }
+		// Remove clone
+		if (_scroll_clone && _scroll_clone.parentNode) {
+			_scroll_clone.parentNode.removeChild(_scroll_clone);
+		}
+		_scroll_clone = null;
+		// Restore inline-block display
+		var orig = document.getElementById("measureContainer");
+		if (orig) orig.style.display = "";
+		var el = document.getElementById("musicalInput");
+		if (el) el.style.whiteSpace = "";
+		if (reset !== false) {
+			var el2 = document.getElementById("musicalInput");
+			if (el2) el2.scrollLeft = 0;
+		}
 	}
 
 	function hilight_all_notes_on_same_beat(instrument, id) {
@@ -863,23 +915,9 @@ function GrooveWriter() {
 		var active_bg = document.getElementById("bg-highlight" + class_cur_all_notes_highlight_id);
 		if (active_bg) {
 			active_bg.style.background = "rgba(50, 126, 173, 0.2)";
-			// Smooth auto-scroll: start scrolling one bar ahead so notes are visible before playing
-			var scroll_container = document.getElementById("musicalInput");
-			if (scroll_container) {
-				// Use getBoundingClientRect to get position relative to scroll container
-				var cont_rect  = scroll_container.getBoundingClientRect();
-				var col_rect   = active_bg.getBoundingClientRect();
-				// Position of column inside the scroll container
-				var col_left   = col_rect.left  - cont_rect.left + scroll_container.scrollLeft;
-				var col_right  = col_rect.right - cont_rect.left + scroll_container.scrollLeft;
-				var vis_left   = scroll_container.scrollLeft;
-				var vis_right  = vis_left + scroll_container.clientWidth;
-				// Two bar lookahead: use the active column width * notes_per_measure to get one bar in px
-				var one_bar_px = active_bg.offsetWidth * class_notes_per_measure;
-				if ((col_right + (one_bar_px * 2)) > vis_right || col_left < vis_left) {
-					var target = Math.max(0, col_left - 60); // 60px left-side label padding
-					scroll_smooth_to(scroll_container, target);
-				}
+			// Start infinite scroll engine on first note highlight
+			if (!_scroll_active) {
+				infinite_scroll_start();
 			}
 		}
 	}
@@ -935,12 +973,8 @@ function GrooveWriter() {
 			class_cur_all_notes_highlight_id = false;
 		}
 
-		// Hard-reset to exactly 0 so no whitespace remains left of the labels
-		var scroll_container = document.getElementById("musicalInput");
-		if (scroll_container) {
-			if (_scroll_raf) cancelAnimationFrame(_scroll_raf);
-			scroll_container.scrollLeft = 0;
-		}
+		// Stop infinite scroll and reset to 0
+		infinite_scroll_stop(true);
 
 	}
 
