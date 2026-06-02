@@ -125,21 +125,22 @@
 }
 
 /* Staff container highlights for A-B loop */
-/* A marker: green outline only */
+/* A marker: thick green top border */
 .staff-container.ab-highlight-a {
-  outline: 2px solid rgba(76, 175, 80, 0.9);
-  outline-offset: -1px;
+  border-top: 4px solid #4caf50 !important;
+  box-sizing: border-box;
 }
 
-/* B marker: blue outline only */
+/* B marker: thick blue top border */
 .staff-container.ab-highlight-b {
-  outline: 2px solid rgba(66, 165, 245, 0.9);
-  outline-offset: -1px;
+  border-top: 4px solid #42a5f5 !important;
+  box-sizing: border-box;
 }
 
-/* Measures between A and B: yellow background */
+/* Measures between A and B: yellow top border */
 .staff-container.ab-highlight-range {
-  background: rgba(255, 210, 0, 0.18) !important;
+  border-top: 4px solid #ffd600 !important;
+  box-sizing: border-box;
 }
 
 /* Style the clear button and indicator in the player bar */
