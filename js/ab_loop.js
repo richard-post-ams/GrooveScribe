@@ -62,12 +62,19 @@
     updateUI();
     if (window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
       var gu = window.myGrooveWriter.myGrooveUtils;
-      // Mark MIDI dirty so it regenerates with the A-B range
       gu.midiNoteHasChanged();
-      // When both A and B are set, stop and restart from A immediately
       if (window.ABLoop.isActive()) {
-        gu.stopMIDI_playback();
-        setTimeout(function () { gu.startMIDI_playback(); }, 50);
+        // Disable native MIDI.Player loop immediately so our callback fires
+        if (typeof MIDI !== 'undefined' && MIDI.Player) {
+          MIDI.Player.loop(false);
+        }
+        // Stop and restart so MIDI regenerates from A immediately
+        if (typeof MIDI !== 'undefined' && MIDI.Player && MIDI.Player.playing) {
+          MIDI.Player.stop();
+          gu.midiEventCallbacks.loadMidiDataEvent(gu.midiEventCallbacks.classRoot, false);
+          MIDI.Player.loop(false);
+          MIDI.Player.start();
+        }
       }
     }
   }
