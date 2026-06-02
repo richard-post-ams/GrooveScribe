@@ -1413,3 +1413,16 @@
 		text-overflow: ellipsis;
 	}
 
+	/* Version number - bottom left, tiny */
+	#gm-version {
+		position: fixed;
+		bottom: 4px;
+		left: 6px;
+		font-size: 9px;
+		color: rgba(255,255,255,0.25);
+		font-family: monospace;
+		z-index: 99999;
+		pointer-events: none;
+		letter-spacing: 0.5px;
+	}
+
