@@ -14,21 +14,17 @@
   var abLoopEnd   = null;
 
   function loadState() {
+    // Always start fresh - stale sessionStorage caused wrong measure highlights
+    abLoopStart = null;
+    abLoopEnd   = null;
     try {
-      var s = parseInt(sessionStorage.getItem('ab_start'), 10);
-      var e = parseInt(sessionStorage.getItem('ab_end'),   10);
-      abLoopStart = isNaN(s) ? null : s;
-      abLoopEnd   = isNaN(e) ? null : e;
+      sessionStorage.removeItem('ab_start');
+      sessionStorage.removeItem('ab_end');
     } catch(ex) {}
   }
 
   function saveState() {
-    try {
-      if (abLoopStart !== null) sessionStorage.setItem('ab_start', abLoopStart);
-      else sessionStorage.removeItem('ab_start');
-      if (abLoopEnd !== null) sessionStorage.setItem('ab_end', abLoopEnd);
-      else sessionStorage.removeItem('ab_end');
-    } catch(ex) {}
+    // State is in-memory only, no sessionStorage persistence
   }
 
   /* ---- Public API ---- */
