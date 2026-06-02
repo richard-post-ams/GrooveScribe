@@ -833,7 +833,13 @@ function GrooveWriter() {
 		var orig = document.getElementById("measureContainer");
 		if (!orig) return;
 
-		_scroll_orig_width  = orig.scrollWidth;
+		_scroll_orig_width = orig.scrollWidth;
+
+		// If the entire groove fits in the visible area, no scrolling or cloning needed
+		if (_scroll_orig_width <= el.clientWidth) {
+			_scroll_active = false;
+			return;
+		}
 		orig.style.display  = "inline-block";
 		el.style.whiteSpace = "nowrap";
 
