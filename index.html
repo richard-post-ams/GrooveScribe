@@ -159,6 +159,7 @@
 							<span id="trainerNavBadge">TRAINER</span>
 							<span id="trainerNavLabel"></span>
 							<button id="trainerNavNext" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.next();" title="Next exercise">&#9654;</button>
+							<button id="trainerNavExit" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.exit();" title="Exit trainer">&#10005; Exit</button>
 						</div>
 						<div id="sheetTopBarRight">
 							<button id="sheetFullscreenBtn" title="Full screen notation" onclick="(function(e){ e.stopPropagation(); var d=document.getElementById('sheetMusicDiv'); d.classList.toggle('sheet-fullscreen'); document.getElementById('sheetFullscreenBtn').textContent = d.classList.contains('sheet-fullscreen') ? '\u2715' : '\u26f6'; })(event)">&#x26f6;</button>
