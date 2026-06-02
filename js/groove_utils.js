@@ -2972,7 +2972,10 @@ function GrooveUtils() {
 
 				// If A-B loop is active, always regenerate MIDI so the range is respected
 				if (window.ABLoop && window.ABLoop.isActive()) {
+					console.log('[AB-repeat] active, forcing refresh. start='+window.ABLoop.getStart()+' end='+window.ABLoop.getEnd());
 					root.midiNoteHasChanged();
+				} else {
+					console.log('[AB-repeat] NOT active');
 				}
 				// regenerate the MIDI if the data needs refreshing or the OffsetClick is rotating every time
 				// advanceMetronomeOptionsOffsetClickStartRotation will return false if not rotating
