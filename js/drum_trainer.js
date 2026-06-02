@@ -270,6 +270,10 @@
     var bar = document.getElementById('trainerNavBar');
     if (bar) bar.style.display = currentIdx >= 0 ? 'flex' : 'none';
 
+    // Update badge: TRAINER: 8TH NOTES
+    var badge = document.getElementById('trainerNavBadge');
+    if (badge) badge.textContent = 'TRAINER: ' + cat.toUpperCase();
+
     prev.disabled  = currentIdx <= 0;
     next.disabled  = currentIdx < 0 || currentIdx >= total - 1;
 
