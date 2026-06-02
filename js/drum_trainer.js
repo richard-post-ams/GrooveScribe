@@ -7,8 +7,8 @@
   'use strict';
 
   var PANEL_ID    = 'trainerPanel';
-  var currentCat  = null;   // currently active category
-  var currentIdx  = -1;     // index within that category, -1 = none
+  var currentCat  = sessionStorage.getItem('tr_cat') || null;
+  var currentIdx  = parseInt(sessionStorage.getItem('tr_idx') || '-1', 10);
 
   /* ================================================================
    * EXERCISE LIBRARY
@@ -115,6 +115,13 @@
     updateNavButtons:  updateNavButtons
   };
 
+  // Restore nav bar state after page reload
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateNavButtons);
+  } else {
+    updateNavButtons();
+  }
+
   function togglePanel() {
     var panel = document.getElementById(PANEL_ID);
     if (!panel) {
@@ -216,7 +223,11 @@
   function loadGroove(urlQuery, cat, idx) {
     if (cat !== undefined) currentCat = cat;
     if (idx !== undefined) currentIdx = idx;
-    updateNavButtons();
+    // Persist before reload so nav bar survives the page reload
+    try {
+      sessionStorage.setItem('tr_cat', currentCat || '');
+      sessionStorage.setItem('tr_idx', String(currentIdx));
+    } catch(e) {}
     window.location.search = urlQuery;
   }
 
@@ -227,6 +238,10 @@
     if (next < 0 || next >= list.length) return;
     var ex = list[next];
     currentIdx = next;
+    try {
+      sessionStorage.setItem('tr_cat', currentCat || '');
+      sessionStorage.setItem('tr_idx', String(currentIdx));
+    } catch(e) {}
     updateNavButtons();
     // Highlight row in panel if open
     var panel = document.getElementById(PANEL_ID);
