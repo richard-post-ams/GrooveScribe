@@ -1260,3 +1260,17 @@
 		text-transform: uppercase;
 	}
 
+	/* Beat position indicator - fixed vertical line at screen centre during playback */
+	#gs-beat-indicator {
+		display: none;
+		position: absolute;
+		width: 2px;
+		background: rgba(50, 126, 173, 0.85);
+		pointer-events: none;
+		z-index: 100;
+		top: 0;
+		border-left: 1px solid rgba(255,255,255,0.3);
+		border-right: 1px solid rgba(255,255,255,0.3);
+		box-shadow: 0 0 6px rgba(50, 126, 173, 0.5);
+	}
+
