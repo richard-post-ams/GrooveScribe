@@ -1308,6 +1308,11 @@
 		position: relative;
 	}
 
+	/* Hide trainer nav bar in fullscreen - it does not apply there */
+	#sheetMusicDiv.sheet-fullscreen #trainerNavBar {
+		display: none !important;
+	}
+
 	/* Fullscreen state */
 	#sheetMusicDiv.sheet-fullscreen {
 		position: fixed !important;
@@ -1352,7 +1357,7 @@
 		align-items: center;
 		justify-content: space-between;
 		gap: 12px;
-		padding: 6px 12px;
+		padding: 6px 56px 6px 12px;
 		background: #f0f0f0;
 		border-bottom: 1px solid #ddd;
 		font-family: 'Lato', Calibri, sans-serif;
