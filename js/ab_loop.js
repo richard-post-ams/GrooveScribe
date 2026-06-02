@@ -133,9 +133,10 @@
       setMarker(measureIndex);
     });
 
-    var closeBtn = container.querySelector('.closeMeasureButton');
-    if (closeBtn && closeBtn.parentNode) {
-      closeBtn.parentNode.insertBefore(btn, closeBtn.nextSibling);
+    // Insert at the very start of the staff container so the button
+    // visually belongs to this bar, not the gap before the next one
+    if (container.firstChild) {
+      container.insertBefore(btn, container.firstChild);
     } else {
       container.appendChild(btn);
     }
