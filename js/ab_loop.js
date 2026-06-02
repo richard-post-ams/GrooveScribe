@@ -179,7 +179,7 @@
       var m = parseInt(c.id.replace('staff-container', ''), 10);
       if (isNaN(m)) return;
       c.classList.remove('ab-highlight-a', 'ab-highlight-b', 'ab-highlight-range');
-      c.style.background = '';
+      c.style.borderTop = '';
       if (abLoopStart !== null && abLoopEnd !== null) {
         if (m === abLoopStart) {
           c.classList.add('ab-highlight-a');
@@ -187,7 +187,6 @@
           c.classList.add('ab-highlight-b');
         } else if (m > abLoopStart && m < abLoopEnd) {
           c.classList.add('ab-highlight-range');
-          c.style.background = 'rgba(255, 210, 0, 0.18)';
         }
       } else if (abLoopStart !== null && m === abLoopStart) {
         c.classList.add('ab-highlight-a');
