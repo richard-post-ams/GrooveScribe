@@ -2725,6 +2725,7 @@ function GrooveWriter() {
 				if (window.ABLoop && window.ABLoop.isActive()) {
 					ab_start = window.ABLoop.getStart() - 1;
 					ab_end   = window.ABLoop.getEnd();
+					console.log('[AB] ab_start='+ab_start+' ab_end='+ab_end+' getStart='+window.ABLoop.getStart()+' getEnd='+window.ABLoop.getEnd());
 				}
 
 				// First measure of the range
