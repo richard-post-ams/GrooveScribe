@@ -811,6 +811,9 @@ function GrooveWriter() {
 
 	var class_cur_all_notes_highlight_id = false;
 
+	// Feature flag: set to true to enable infinite scroll during playback
+	var FEATURE_INFINITE_SCROLL = false;
+
 	// ---------------------------------------------------------------
 	// Infinite seamless scroll engine
 	// Runs a tempo-locked rAF loop. Clones the measure grid and appends
@@ -994,9 +997,8 @@ function GrooveWriter() {
 		var active_bg = document.getElementById("bg-highlight" + class_cur_all_notes_highlight_id);
 		if (active_bg) {
 			active_bg.style.background = "rgba(50, 126, 173, 0.2)";
-			// Start infinite scroll engine on first note highlight
-			// Always restart - guards against bad state from previous session
-			if (!_scroll_active) {
+			// Start infinite scroll engine on first note highlight (feature flag)
+			if (FEATURE_INFINITE_SCROLL && !_scroll_active) {
 				try { infinite_scroll_start(); } catch(e) { _scroll_active = false; }
 			}
 		}
