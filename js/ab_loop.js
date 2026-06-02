@@ -78,7 +78,12 @@
     saveState();
     updateUI();
     if (window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
-      window.myGrooveWriter.myGrooveUtils.midiNoteHasChanged();
+      var gu = window.myGrooveWriter.myGrooveUtils;
+      gu.midiNoteHasChanged();
+      // Restore native MIDI.Player loop now that A-B is cleared
+      if (typeof MIDI !== 'undefined' && MIDI.Player) {
+        MIDI.Player.loop(gu.shouldMIDIRepeat);
+      }
     }
   }
 
