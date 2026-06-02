@@ -60,9 +60,15 @@
     }
     saveState();
     updateUI();
-    // Mark MIDI dirty so it regenerates with new A-B range on next play
     if (window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
-      window.myGrooveWriter.myGrooveUtils.midiNoteHasChanged();
+      var gu = window.myGrooveWriter.myGrooveUtils;
+      // Mark MIDI dirty so it regenerates with the A-B range
+      gu.midiNoteHasChanged();
+      // When both A and B are set, stop and restart from A immediately
+      if (window.ABLoop.isActive()) {
+        gu.stopMIDI_playback();
+        setTimeout(function () { gu.startMIDI_playback(); }, 50);
+      }
     }
   }
 
