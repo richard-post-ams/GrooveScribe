@@ -60,9 +60,9 @@
     }
     saveState();
     updateUI();
-    // Reload the groove so the MIDI range takes effect
-    if (window.myGrooveWriter && window.myGrooveWriter.updateCurrentURL) {
-      window.myGrooveWriter.updateCurrentURL();
+    // Mark MIDI dirty so it regenerates with new A-B range on next play
+    if (window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
+      window.myGrooveWriter.myGrooveUtils.midiNoteHasChanged();
     }
   }
 
@@ -71,8 +71,8 @@
     abLoopEnd   = null;
     saveState();
     updateUI();
-    if (window.myGrooveWriter && window.myGrooveWriter.updateCurrentURL) {
-      window.myGrooveWriter.updateCurrentURL();
+    if (window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
+      window.myGrooveWriter.myGrooveUtils.midiNoteHasChanged();
     }
   }
 
@@ -174,14 +174,21 @@
       }
     });
 
-    // Yellow background on staff containers inside A-B range
+    // Yellow background on measures between A and B
     document.querySelectorAll('[id^="staff-container"]').forEach(function (c) {
       var m = parseInt(c.id.replace('staff-container', ''), 10);
+      if (isNaN(m)) return;
       c.classList.remove('ab-highlight-a', 'ab-highlight-b', 'ab-highlight-range');
+      c.style.background = '';
       if (abLoopStart !== null && abLoopEnd !== null) {
-        if      (m === abLoopStart)                   c.classList.add('ab-highlight-a');
-        else if (m === abLoopEnd)                     c.classList.add('ab-highlight-b');
-        else if (m > abLoopStart && m < abLoopEnd)    c.classList.add('ab-highlight-range');
+        if (m === abLoopStart) {
+          c.classList.add('ab-highlight-a');
+        } else if (m === abLoopEnd) {
+          c.classList.add('ab-highlight-b');
+        } else if (m > abLoopStart && m < abLoopEnd) {
+          c.classList.add('ab-highlight-range');
+          c.style.background = 'rgba(255, 210, 0, 0.18)';
+        }
       } else if (abLoopStart !== null && m === abLoopStart) {
         c.classList.add('ab-highlight-a');
       }
