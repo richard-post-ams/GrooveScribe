@@ -16,91 +16,91 @@
 
     '8th Notes': [
       {
-        id:    '8th_1',
-        title: '1. Basic groove — straight 8ths',
-        desc:  'Hi-hat on every 8th, snare on beats 2 and 4, kick on beat 1.',
+        id:    '8th_01',
+        title: '1. Hi-hat only — straight 8ths',
+        desc:  'Right hand only. Eight even 8th notes. Focus on consistency and a relaxed grip.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--------|&K=|--------|'
+      },
+      {
+        id:    '8th_02',
+        title: '2. Hi-hat + snare on beat 3',
+        desc:  'Add the snare on beat 3 only. One point of focus for the left hand.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|----O---|&K=|--------|'
+      },
+      {
+        id:    '8th_03',
+        title: '3. Hi-hat + snare on 2 and 4',
+        desc:  'The standard backbeat. This is the foundation of almost all popular music.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|--------|'
+      },
+      {
+        id:    '8th_04',
+        title: '4. Full basic groove — kick on beat 1',
+        desc:  'Add the kick on beat 1. Hi-hat, snare 2 and 4, kick 1. The complete starter groove.',
         url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|o-------|'
       },
       {
-        id:    '8th_2a',
-        title: '2a. Kick shifted +1 (and of 1)',
-        desc:  'Move the kick one 8th note to the right — now on the "and" of beat 1.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|-o------|'
+        id:    '8th_05',
+        title: '5. Kick on beats 1 and 3',
+        desc:  'The most common rock kick pattern. Kick lands on beats 1 and 3, snare on 2 and 4.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|o---o---|'
       },
       {
-        id:    '8th_2b',
-        title: '2b. Kick shifted +2 (beat 2)',
-        desc:  'Kick on beat 2.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|--o-----|'
+        id:    '8th_06',
+        title: '6. Kick on 1 and the "and" of 2',
+        desc:  'First syncopated kick. The second kick lands between beats 2 and 3.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|o--o----|'
       },
       {
-        id:    '8th_2c',
-        title: '2c. Kick shifted +3 (and of 2)',
-        desc:  'Kick on the "and" of beat 2.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|---o----|'
+        id:    '8th_07',
+        title: '7. Kick on 1, "and" of 2, and 3',
+        desc:  'Building the kick pattern. Three kicks — the groove starts to move forward.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|o--oo---|'
       },
       {
-        id:    '8th_2d',
-        title: '2d. Kick shifted +4 (beat 3)',
-        desc:  'Kick on beat 3.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|----o---|'
+        id:    '8th_08',
+        title: '8. Four-on-the-floor',
+        desc:  'Kick on every beat: 1, 2, 3, 4. The foundation of disco, house and EDM.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|o-o-o-o-|'
       },
       {
-        id:    '8th_3',
-        title: '3. Double kick — beats 1 and 2',
-        desc:  'Two kicks back to back: beat 1 and the and of 1.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|oo------|'
+        id:    '8th_09',
+        title: '9. Kick on the "and" of 1 and beat 3',
+        desc:  'Off-beat kick feel. The kick avoids the downbeats — common in funk and R&B.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|-o--o---|'
       },
       {
-        id:    '8th_3a',
-        title: '3a. Double kick shifted +1',
-        desc:  'Both kicks shifted one 8th to the right.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|-oo-----|'
+        id:    '8th_10',
+        title: '10. Open hi-hat on the "and" of 2',
+        desc:  'Open the hi-hat between beats 2 and 3. Close it on beat 3. Classic rock technique.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|x-xox-x-|&S=|--O---O-|&K=|o---o---|'
       },
       {
-        id:    '8th_3b',
-        title: '3b. Double kick shifted +2',
-        desc:  'Double kick starting on beat 2.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|--oo----|'
+        id:    '8th_11',
+        title: '11. Open hi-hat on the "and" of 4',
+        desc:  'Open the hi-hat on the last 8th of the bar — it leads into beat 1 of the next bar.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|x-x-x-xo|&S=|--O---O-|&K=|o---o---|'
       },
       {
-        id:    '8th_3c',
-        title: '3c. Double kick shifted +3',
-        desc:  'Double kick starting on the and of beat 2.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|--O---O-|&K=|---oo---|'
+        id:    '8th_12',
+        title: '12. Ghost note before beat 2',
+        desc:  'Add a soft ghost note on the snare on the "and" of 1. Introduction to dynamics.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|-gO---O-|&K=|o---o---|'
       },
       {
-        id:    '8th_4a',
-        title: '4a. Snare shifted — beat 2½ and 4½',
-        desc:  'Move both snare hits one 8th to the right (to the "and" of beats 2 and 4).',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|---O---O|&K=|o-------|'
+        id:    '8th_13',
+        title: '13. Two-bar phrase',
+        desc:  'Basic groove for one bar, then a simplified fill setup in bar 2. Think in phrases.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=2&H=|xxxxxxxx|xxxxxxxx|&S=|--O---O-|--O--OOO|&K=|o---o---|o-------|'
       },
       {
-        id:    '8th_4b',
-        title: '4b. Snare shifted — beat 3 only',
-        desc:  'First snare moved to beat 3; second drops off.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|----O---|&K=|o-------|'
-      },
-      {
-        id:    '8th_4c',
-        title: '4c. Snare shifted — and of beat 3',
-        desc:  'Snare on the "and" of beat 3.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|-----O--|&K=|o-------|'
-      },
-      {
-        id:    '8th_4d',
-        title: '4d. Snare shifted — beat 4 only',
-        desc:  'Single snare on beat 4.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xxxxxxxx|&S=|------O-|&K=|o-------|'
-      },
-      {
-        id:    '8th_5',
-        title: '5. Open hi-hat on the "and" of beat 1',
-        desc:  'Hi-hat opens on the "and" of beat 1 — classic rock fill-in technique.',
-        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|xoxxxxxx|&S=|--O---O-|&K=|o-------|'
+        id:    '8th_14',
+        title: '14. Combination — syncopated kick + open hi-hat',
+        desc:  'Putting it all together. Syncopated kick, open hi-hat on the and of 4, snare on 2 and 4.',
+        url:   '?TimeSig=4/4&Div=8&Tempo=60&Measures=1&H=|x-x-x-xo|&S=|--O---O-|&K=|o--o----|'
       }
     ]
-  };
+  };;
 
   /* ================================================================
    * Panel open / close
