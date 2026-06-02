@@ -2725,6 +2725,9 @@ function GrooveWriter() {
 				if (window.ABLoop && window.ABLoop.isActive()) {
 					ab_start = window.ABLoop.getStart() - 1;
 					ab_end   = window.ABLoop.getEnd();
+					console.log('[AB-midi] generating: ab_start='+ab_start+' ab_end='+ab_end+' numMeasures='+class_number_of_measures);
+				} else {
+					console.log('[AB-midi] NOT active, full groove');
 				}
 
 				// First measure of the range
