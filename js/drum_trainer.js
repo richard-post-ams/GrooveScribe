@@ -179,11 +179,7 @@
       return [
         '<div class="tr-exercise" data-url="' + escH(ex.url) + '" data-id="' + escH(ex.id) + '">',
         '  <div class="tr-ex-num">' + (idx + 1) + '</div>',
-        '  <div class="tr-ex-body">',
-        '    <div class="tr-ex-title">' + escH(ex.title) + '</div>',
-        '    <div class="tr-ex-desc">'  + escH(ex.desc)  + '</div>',
-        '  </div>',
-        '  <button class="tr-load-btn" data-url="' + escH(ex.url) + '">Load &#9654;</button>',
+        '  <div class="tr-ex-title">' + escH(ex.title) + '</div>',
         '</div>'
       ].join('\n');
     }).join('\n');
@@ -193,15 +189,14 @@
     var panel = document.getElementById(PANEL_ID);
     if (!panel) return;
 
-    panel.querySelectorAll('.tr-load-btn').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        e.stopPropagation();
-        loadGroove(btn.getAttribute('data-url'));
-        // Highlight active
+    panel.querySelectorAll('.tr-exercise').forEach(function (row) {
+      row.style.cursor = 'pointer';
+      row.addEventListener('click', function () {
+        loadGroove(row.getAttribute('data-url'));
         panel.querySelectorAll('.tr-exercise').forEach(function (el) {
           el.classList.remove('tr-active');
         });
-        btn.closest('.tr-exercise').classList.add('tr-active');
+        row.classList.add('tr-active');
       });
     });
   }
