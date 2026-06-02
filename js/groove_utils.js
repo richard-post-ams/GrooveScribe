@@ -2960,7 +2960,6 @@ function GrooveUtils() {
 			root.lastMidiTimeUpdate = -1;
 		}
 		if (data.now == data.end) {
-			console.log('[END] data.now==data.end, shouldMIDIRepeat='+root.shouldMIDIRepeat+' ABLoop.isActive='+(window.ABLoop?window.ABLoop.isActive():'none')+' MIDI.Player.shouldLoop='+MIDI.Player.shouldLoop);
 
 			// at the end of a song
 			root.midiEventCallbacks.notePlaying(root.midiEventCallbacks.classRoot, "complete", 1);
