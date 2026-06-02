@@ -883,6 +883,7 @@ function GrooveWriter() {
 		function addTile() {
 			var c = orig.cloneNode(true);
 			c.removeAttribute("id");
+			c.setAttribute("data-gs-tile", "1");
 			c.style.display = "inline-block";
 			el.appendChild(c);
 			tiles.push(c);
@@ -890,9 +891,11 @@ function GrooveWriter() {
 		}
 
 		function pruneTiles() {
-			// Remove tiles that are entirely left of the viewport (with 1 tile buffer)
+			// Remove only cloned tiles (data-gs-tile), never measureContainer itself
 			while (tiles.length > 2 && tiles[0].getBoundingClientRect().right < el.getBoundingClientRect().left - _scroll_orig_width) {
 				var old = tiles.shift();
+				// Safety: never remove the original measureContainer
+				if (old.id === "measureContainer") break;
 				if (old.parentNode) old.parentNode.removeChild(old);
 				// Compensate scrollLeft so the view does not jump
 				el.scrollLeft -= _scroll_orig_width;
@@ -906,6 +909,7 @@ function GrooveWriter() {
 
 		function loop(timestamp) {
 			if (!_scroll_active) return;
+			try {
 			if (_scroll_last_ts === null) _scroll_last_ts = timestamp;
 			var delta    = timestamp - _scroll_last_ts;
 			_scroll_last_ts = timestamp;
@@ -935,6 +939,7 @@ function GrooveWriter() {
 			pruneTiles();
 
 			_scroll_raf = requestAnimationFrame(loop);
+			} catch(e) { _scroll_active = false; infinite_scroll_stop(true); }
 		}
 		_scroll_raf = requestAnimationFrame(loop);
 	}
@@ -942,18 +947,18 @@ function GrooveWriter() {
 	function infinite_scroll_stop(reset) {
 		_scroll_active = false;
 		if (_scroll_raf) { cancelAnimationFrame(_scroll_raf); _scroll_raf = null; }
-		// Remove all cloned tiles (everything except measureContainer itself)
+		// Remove only elements with the gs-tile marker - never touch measureContainer
 		var el = document.getElementById("musicalInput");
 		if (el) {
-			var toRemove = el.querySelectorAll("[data-gs-tile]");
-			toRemove.forEach(function(n){ if(n.parentNode) n.parentNode.removeChild(n); });
-			// Also remove any inline-block clones that are not measureContainer
-			Array.prototype.slice.call(el.children).forEach(function(c){
-				if (c.id !== "measureContainer") {
-					c.parentNode.removeChild(c);
+			var toRemove = [];
+			Array.prototype.slice.call(el.children).forEach(function(c) {
+				if (c.id !== "measureContainer" && c.hasAttribute("data-gs-tile")) {
+					toRemove.push(c);
 				}
 			});
+			toRemove.forEach(function(c) { c.parentNode.removeChild(c); });
 			el.style.whiteSpace = "";
+			el.scrollLeft = 0;
 		}
 		_scroll_clone = null;
 		var orig = document.getElementById("measureContainer");
@@ -990,8 +995,9 @@ function GrooveWriter() {
 		if (active_bg) {
 			active_bg.style.background = "rgba(50, 126, 173, 0.2)";
 			// Start infinite scroll engine on first note highlight
+			// Always restart - guards against bad state from previous session
 			if (!_scroll_active) {
-				infinite_scroll_start();
+				try { infinite_scroll_start(); } catch(e) { _scroll_active = false; }
 			}
 		}
 	}
