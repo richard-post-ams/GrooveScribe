@@ -60,20 +60,15 @@
       var gu = window.myGrooveWriter.myGrooveUtils;
       gu.midiNoteHasChanged();
       if (window.ABLoop.isActive()) {
-        console.log('[AB setMarker] isActive=true start='+abLoopStart+' end='+abLoopEnd);
         if (typeof MIDI !== 'undefined' && MIDI.Player) {
           MIDI.Player.loop(false);
         }
         if (typeof MIDI !== 'undefined' && MIDI.Player && MIDI.Player.playing) {
           MIDI.Player.stop();
-          console.log('[AB setMarker] before loadMidiDataEvent: isActive='+window.ABLoop.isActive());
           gu.midiEventCallbacks.loadMidiDataEvent(gu.midiEventCallbacks.classRoot, false);
-          console.log('[AB setMarker] after loadMidiDataEvent: isActive='+window.ABLoop.isActive());
           MIDI.Player.loop(false);
           MIDI.Player.start();
         }
-      } else {
-        console.log('[AB setMarker] isActive=FALSE start='+abLoopStart+' end='+abLoopEnd);
       }
     }
   }
