@@ -2723,9 +2723,8 @@ function GrooveWriter() {
 				var ab_start = 0;
 				var ab_end   = class_number_of_measures;
 				if (window.ABLoop && window.ABLoop.isActive()) {
-					ab_start = window.ABLoop.getStart() - 1;
-					ab_end   = window.ABLoop.getEnd();
-					console.log('[AB] ab_start='+ab_start+' ab_end='+ab_end+' getStart='+window.ABLoop.getStart()+' getEnd='+window.ABLoop.getEnd());
+					ab_start = window.ABLoop.getStart() - 1;  // 0-based
+					ab_end   = window.ABLoop.getEnd();        // 1-based inclusive = exclusive end for loop
 				}
 
 				// First measure of the range
