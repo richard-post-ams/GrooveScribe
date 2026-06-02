@@ -1274,3 +1274,72 @@
 		box-shadow: 0 0 6px rgba(50, 126, 173, 0.5);
 	}
 
+	/* Fullscreen notation button */
+	#sheetFullscreenBtn {
+		position: absolute;
+		top: 6px;
+		right: 10px;
+		z-index: 200;
+		background: rgba(0,0,0,0.12);
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		color: #555;
+		font-size: 16px;
+		width: 28px;
+		height: 28px;
+		line-height: 1;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		transition: background 0.15s, color 0.15s;
+	}
+	#sheetFullscreenBtn:hover {
+		background: rgba(0,0,0,0.25);
+		color: #000;
+	}
+
+	/* sheetMusicDiv needs position:relative so the button is anchored */
+	#sheetMusicDiv {
+		position: relative;
+	}
+
+	/* Fullscreen state */
+	#sheetMusicDiv.sheet-fullscreen {
+		position: fixed !important;
+		inset: 0 !important;
+		width: 100vw !important;
+		height: 100vh !important;
+		margin: 0 !important;
+		padding: 40px 20px 20px !important;
+		background: #fff !important;
+		z-index: 9999 !important;
+		overflow-y: auto !important;
+		display: flex !important;
+		flex-direction: column !important;
+		align-items: center !important;
+		justify-content: center !important;
+		box-sizing: border-box !important;
+	}
+
+	/* Scale SVG to fill fullscreen */
+	#sheetMusicDiv.sheet-fullscreen .svgTarget svg {
+		width: 96vw !important;
+		max-width: 96vw !important;
+		height: auto !important;
+		margin: 0 auto !important;
+	}
+
+	/* Exit button styling in fullscreen */
+	#sheetMusicDiv.sheet-fullscreen #sheetFullscreenBtn {
+		position: fixed !important;
+		top: 12px !important;
+		right: 16px !important;
+		width: 36px !important;
+		height: 36px !important;
+		font-size: 20px !important;
+		background: rgba(0,0,0,0.15) !important;
+		z-index: 10000 !important;
+	}
+
