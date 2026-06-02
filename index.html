@@ -153,9 +153,9 @@
 				<!-- rendering area -->
 				<div id="sheetMusicDiv" class="fullWidthEle">
 					<div id="trainerNavBar" style="display:none;">
-						<button id="trainerNavPrev" onclick="window.DrumTrainer && window.DrumTrainer.prev();" title="Previous exercise">&#9664; Prev</button>
+						<button id="trainerNavPrev" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.prev();" title="Previous exercise">&#9664; Prev</button>
 						<span id="trainerNavLabel"></span>
-						<button id="trainerNavNext" onclick="window.DrumTrainer && window.DrumTrainer.next();" title="Next exercise">Next &#9654;</button>
+						<button id="trainerNavNext" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.next();" title="Next exercise">Next &#9654;</button>
 					</div>
 					<button id="sheetFullscreenBtn" title="Full screen notation" onclick="(function(){ var d=document.getElementById('sheetMusicDiv'); d.classList.toggle('sheet-fullscreen'); document.getElementById('sheetFullscreenBtn').textContent = d.classList.contains('sheet-fullscreen') ? '✕' : '⛶'; })()">&#x26f6;</button>
 					<div id="svgTarget" class="svgTarget">
