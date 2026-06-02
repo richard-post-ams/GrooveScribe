@@ -128,10 +128,11 @@
       setMarker(measureIndex);
     });
 
-    // Insert at the very start of the staff container so the button
-    // visually belongs to this bar, not the gap before the next one
-    if (container.firstChild) {
-      container.insertBefore(btn, container.firstChild);
+    // Insert before the closeMeasureButton (which sits after notes-row-container)
+    // This places our button visibly in the bar's control area
+    var closeBtn = container.querySelector('.closeMeasureButton');
+    if (closeBtn) {
+      container.insertBefore(btn, closeBtn);
     } else {
       container.appendChild(btn);
     }
