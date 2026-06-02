@@ -152,6 +152,7 @@
 			<div class="Printable">
 				<!-- rendering area -->
 				<div id="sheetMusicDiv" class="fullWidthEle">
+					<button id="sheetFullscreenBtn" title="Full screen notation" onclick="(function(){ var d=document.getElementById('sheetMusicDiv'); d.classList.toggle('sheet-fullscreen'); document.getElementById('sheetFullscreenBtn').textContent = d.classList.contains('sheet-fullscreen') ? '✕' : '⛶'; })()">&#x26f6;</button>
 					<div id="svgTarget" class="svgTarget">
 						<!-- space for the SVG sheet music to display -->
 					</div>
