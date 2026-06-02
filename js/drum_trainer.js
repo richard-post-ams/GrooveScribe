@@ -6,7 +6,9 @@
 (function () {
   'use strict';
 
-  var PANEL_ID = 'trainerPanel';
+  var PANEL_ID    = 'trainerPanel';
+  var currentCat  = null;   // currently active category
+  var currentIdx  = -1;     // index within that category, -1 = none
 
   /* ================================================================
    * EXERCISE LIBRARY
@@ -107,7 +109,10 @@
    * ================================================================ */
 
   window.DrumTrainer = {
-    toggle: togglePanel
+    toggle:            togglePanel,
+    next:              function () { navigate(1); },
+    prev:              function () { navigate(-1); },
+    updateNavButtons:  updateNavButtons
   };
 
   function togglePanel() {
@@ -189,10 +194,14 @@
     var panel = document.getElementById(PANEL_ID);
     if (!panel) return;
 
-    panel.querySelectorAll('.tr-exercise').forEach(function (row) {
+    var cat = panel.querySelector('#trCategorySelect') ?
+              panel.querySelector('#trCategorySelect').value :
+              Object.keys(EXERCISES)[0];
+
+    panel.querySelectorAll('.tr-exercise').forEach(function (row, idx) {
       row.style.cursor = 'pointer';
       row.addEventListener('click', function () {
-        loadGroove(row.getAttribute('data-url'));
+        loadGroove(row.getAttribute('data-url'), cat, idx);
         panel.querySelectorAll('.tr-exercise').forEach(function (el) {
           el.classList.remove('tr-active');
         });
@@ -204,8 +213,54 @@
   /* ================================================================
    * Load a groove by setting window.location.search
    * ================================================================ */
-  function loadGroove(urlQuery) {
+  function loadGroove(urlQuery, cat, idx) {
+    if (cat !== undefined) currentCat = cat;
+    if (idx !== undefined) currentIdx = idx;
+    updateNavButtons();
     window.location.search = urlQuery;
+  }
+
+  function navigate(delta) {
+    var cat  = currentCat || Object.keys(EXERCISES)[0];
+    var list = EXERCISES[cat] || [];
+    var next = currentIdx + delta;
+    if (next < 0 || next >= list.length) return;
+    var ex = list[next];
+    currentIdx = next;
+    updateNavButtons();
+    // Highlight row in panel if open
+    var panel = document.getElementById(PANEL_ID);
+    if (panel) {
+      panel.querySelectorAll('.tr-exercise').forEach(function (row) {
+        row.classList.remove('tr-active');
+      });
+      var rows = panel.querySelectorAll('.tr-exercise');
+      if (rows[next]) rows[next].classList.add('tr-active');
+    }
+    window.location.search = ex.url;
+  }
+
+  function updateNavButtons() {
+    var cat   = currentCat || Object.keys(EXERCISES)[0];
+    var list  = EXERCISES[cat] || [];
+    var total = list.length;
+
+    var prev  = document.getElementById('trainerNavPrev');
+    var next  = document.getElementById('trainerNavNext');
+    var label = document.getElementById('trainerNavLabel');
+
+    if (!prev || !next) return;
+
+    // Show nav bar only when a trainer exercise is active
+    var bar = document.getElementById('trainerNavBar');
+    if (bar) bar.style.display = currentIdx >= 0 ? 'flex' : 'none';
+
+    prev.disabled  = currentIdx <= 0;
+    next.disabled  = currentIdx < 0 || currentIdx >= total - 1;
+
+    if (label && currentIdx >= 0 && list[currentIdx]) {
+      label.textContent = list[currentIdx].title;
+    }
   }
 
   /* ================================================================
