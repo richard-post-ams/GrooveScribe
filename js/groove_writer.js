@@ -1703,13 +1703,15 @@ function GrooveWriter() {
 			// Improvement #7: left-click cycles through velocity levels
 			switch (type) {
 				case "hh":
-					// cycle: off -> normal -> accent -> off
+					// cycle: off -> normal -> accent -> open -> off  (improvement #7)
 					var hh_cur = get_hh_state(id, "URL");
 					if (hh_cur === false || hh_cur === "-")
 						set_hh_state(id, "normal", true);
 					else if (hh_cur === "x")
 						set_hh_state(id, "accent", true);
 					else if (hh_cur === "X")
+						set_hh_state(id, "open", true);
+					else if (hh_cur === "o")
 						set_hh_state(id, "off", true);
 					else
 						set_hh_state(id, is_hh_on(id) ? "off" : "normal", true);
