@@ -851,6 +851,24 @@ function GrooveWriter() {
 		var holdoff_ms  = (duration_ms / Math.max(1, class_number_of_measures)) * 2;
 		var half_width  = el.clientWidth / 2;
 
+		// Create fixed centre-line indicator pinned to the middle of musicalInput
+		var indicator = document.getElementById("gs-beat-indicator");
+		if (!indicator) {
+			indicator = document.createElement("div");
+			indicator.id = "gs-beat-indicator";
+			// Insert as sibling of musicalInput inside RightHandContent (position:relative)
+			var rh = document.getElementById("RightHandContent") || el.parentNode;
+			rh.appendChild(indicator);
+		}
+		// Calculate position: centre of musicalInput relative to RightHandContent
+		var rh       = document.getElementById("RightHandContent") || el.parentNode;
+		var rh_rect  = rh.getBoundingClientRect();
+		var el_rect  = el.getBoundingClientRect();
+		indicator.style.left   = Math.round(el_rect.left - rh_rect.left + el.clientWidth / 2) + "px";
+		indicator.style.top    = Math.round(el_rect.top  - rh_rect.top) + "px";
+		indicator.style.height = el.offsetHeight + "px";
+		indicator.style.display = "block";
+
 		_scroll_active  = true;
 		_scroll_last_ts = null;
 		var elapsed_ms  = 0;
@@ -934,6 +952,10 @@ function GrooveWriter() {
 		_scroll_clone = null;
 		var orig = document.getElementById("measureContainer");
 		if (orig) orig.style.display = "";
+		// Hide beat indicator
+		var indicator = document.getElementById("gs-beat-indicator");
+		if (indicator) indicator.style.display = "none";
+
 		if (reset !== false) {
 			if (el) el.scrollLeft = 0;
 		}
