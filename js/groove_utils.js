@@ -3351,10 +3351,7 @@ function GrooveUtils() {
 			'				<span for="swingAmount" class="swingOutput" id="swingOutput' + root.grooveUtilsUniqueIndex + '">0% swing</span>' +
 			'				<input type=range min=0 max=50 value=0 class="swingInput' + (root.is_touch_device() ? ' touch' : '') + '" id="swingInput' + root.grooveUtilsUniqueIndex + '" list="swingSettings" step=5 >' +
 			'			</div>' +
-			'			<div class="progMetroRow" id="progMetroRow' + root.grooveUtilsUniqueIndex + '">'+
-			'				<span class="progMetroToggle" title="Progressive Metronome" onclick="window.ProgressiveMetronome && window.ProgressiveMetronome.togglePanel()">⏳ PROGRESSIVE</span>'+
-			'			</div>' +
-			'       </span>';
+						'       </span>';
 
 		if (expandable)
 			newHTML +=
