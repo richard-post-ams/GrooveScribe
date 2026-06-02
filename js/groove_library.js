@@ -1,188 +1,282 @@
 /* =======================================================
- * GrooveScribe Local Groove Library - Improvement #10
- * localStorage-based save/load with name, tags, timestamp.
- * Exposes window.GrooveLibrary API for index.html to call.
+ * GrooveScribe Local Groove Library - with Folders
+ * localStorage-based save/load with folders, name, timestamp.
  * ======================================================= */
 
 (function () {
   'use strict';
 
-  var STORAGE_KEY = 'groovescribe_library';
-  var PANEL_ID    = 'grooveLibraryPanel';
+  var STORAGE_KEY         = 'groovescribe_library';
+  var FOLDERS_STORAGE_KEY = 'groovescribe_folders';
+  var PANEL_ID            = 'grooveLibraryPanel';
+  var ALL_FOLDER_ID       = '__all__';
 
-  /* ---- Storage helpers ---- */
+  var currentFolder = ALL_FOLDER_ID;
+
+  /* ================================================================
+   * Storage
+   * ================================================================ */
 
   function loadAll() {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-    } catch (e) {
-      return [];
-    }
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+    catch (e) { return []; }
   }
 
   function saveAll(grooves) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(grooves));
   }
 
+  function loadFolders() {
+    try { return JSON.parse(localStorage.getItem(FOLDERS_STORAGE_KEY) || '[]'); }
+    catch (e) { return []; }
+  }
+
+  function saveFolders(folders) {
+    localStorage.setItem(FOLDERS_STORAGE_KEY, JSON.stringify(folders));
+  }
+
   function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
   }
 
-  /* ---- Public API ---- */
+  /* ================================================================
+   * Public API
+   * ================================================================ */
 
-  function saveGroove(name, tags, urlString) {
+  function saveGroove(name, folder, urlString) {
     var grooves = loadAll();
     var entry = {
       id:        generateId(),
       name:      name || 'Untitled',
-      tags:      tags || '',
+      folder:    folder || '',
       url:       urlString,
       createdAt: new Date().toISOString()
     };
-    grooves.unshift(entry); // newest first
+    grooves.unshift(entry);
     saveAll(grooves);
     return entry;
   }
 
   function deleteGroove(id) {
-    var grooves = loadAll().filter(function (g) { return g.id !== id; });
-    saveAll(grooves);
+    saveAll(loadAll().filter(function (g) { return g.id !== id; }));
   }
 
-  function renameGroove(id, newName) {
+  function createFolder(name) {
+    var folders = loadFolders();
+    var trimmed = (name || '').trim();
+    if (!trimmed) return null;
+    if (folders.some(function (f) { return f.name.toLowerCase() === trimmed.toLowerCase(); })) return null;
+    var folder = { id: generateId(), name: trimmed };
+    folders.push(folder);
+    folders.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    saveFolders(folders);
+    return folder;
+  }
+
+  function deleteFolder(id) {
+    // Move grooves in this folder to root
     var grooves = loadAll().map(function (g) {
-      if (g.id === id) g.name = newName;
+      if (g.folder === id) g.folder = '';
       return g;
     });
     saveAll(grooves);
+    saveFolders(loadFolders().filter(function (f) { return f.id !== id; }));
   }
 
-  function searchGrooves(query) {
-    var q = (query || '').toLowerCase();
+  function getGroovesInFolder(folderId) {
     return loadAll().filter(function (g) {
-      return !q ||
-        g.name.toLowerCase().includes(q) ||
-        g.tags.toLowerCase().includes(q);
+      if (folderId === ALL_FOLDER_ID) return true;
+      if (folderId === '')            return !g.folder;
+      return g.folder === folderId;
     });
   }
 
-  /* ---- UI helpers ---- */
+  /* ================================================================
+   * Helpers
+   * ================================================================ */
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
 
   function formatDate(iso) {
     try {
       var d = new Date(iso);
-      return d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) +
-             ' ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-    } catch (e) { return iso; }
+      return d.toLocaleDateString(undefined, { day:'numeric', month:'short' }) +
+             ' ' + d.toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit' });
+    } catch(e) { return ''; }
   }
 
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+  /* ================================================================
+   * Render
+   * ================================================================ */
 
-  /* ---- Render panel ---- */
-
-  function renderPanel(query) {
+  function renderPanel() {
     var panel = document.getElementById(PANEL_ID);
     if (!panel) return;
 
-    var grooves = searchGrooves(query);
+    var folders = loadFolders();
+    var grooves = getGroovesInFolder(currentFolder);
+    var all     = loadAll();
 
+    // Folder sidebar items
+    var folderItems = [
+      '<div class="gl-folder-item' + (currentFolder === ALL_FOLDER_ID ? ' gl-folder-active' : '') +
+        '" data-fid="' + ALL_FOLDER_ID + '">',
+      '  <span class="gl-folder-icon">&#128191;</span>',
+      '  <span class="gl-folder-name">All grooves</span>',
+      '  <span class="gl-folder-count">' + all.length + '</span>',
+      '</div>',
+      '<div class="gl-folder-item' + (currentFolder === '' ? ' gl-folder-active' : '') +
+        '" data-fid="">',
+      '  <span class="gl-folder-icon">&#128196;</span>',
+      '  <span class="gl-folder-name">Unfiled</span>',
+      '  <span class="gl-folder-count">' + all.filter(function(g){return !g.folder;}).length + '</span>',
+      '</div>'
+    ].join('');
+
+    var userFolderItems = folders.map(function (f) {
+      var count = all.filter(function (g) { return g.folder === f.id; }).length;
+      return [
+        '<div class="gl-folder-item' + (currentFolder === f.id ? ' gl-folder-active' : '') +
+          '" data-fid="' + escapeHtml(f.id) + '">',
+        '  <span class="gl-folder-icon">&#128193;</span>',
+        '  <span class="gl-folder-name">' + escapeHtml(f.name) + '</span>',
+        '  <span class="gl-folder-count">' + count + '</span>',
+        '  <button class="gl-folder-del" data-fid="' + escapeHtml(f.id) + '" title="Delete folder">&times;</button>',
+        '</div>'
+      ].join('');
+    }).join('');
+
+    // Groove rows
     var rows = grooves.length === 0
-      ? '<div class="gl-empty">No grooves saved yet. Click <b>Save</b> to add one.</div>'
+      ? '<div class="gl-empty">No grooves here yet.</div>'
       : grooves.map(function (g) {
-          var tagHtml = g.tags
-            ? g.tags.split(',').map(function (t) {
-                return '<span class="gl-tag">' + escapeHtml(t.trim()) + '</span>';
-              }).join('')
-            : '';
           return [
             '<div class="gl-row" data-id="' + g.id + '">',
             '  <div class="gl-row-main">',
-            '    <span class="gl-name" title="Click to load">' + escapeHtml(g.name) + '</span>',
+            '    <span class="gl-name">' + escapeHtml(g.name) + '</span>',
             '    <span class="gl-date">' + formatDate(g.createdAt) + '</span>',
             '  </div>',
-            tagHtml ? '<div class="gl-tags">' + tagHtml + '</div>' : '',
             '  <div class="gl-row-actions">',
-            '    <button class="gl-btn gl-btn-load"  data-id="' + g.id + '" data-url="' + escapeHtml(g.url) + '">Load</button>',
-            '    <button class="gl-btn gl-btn-del"   data-id="' + g.id + '">Delete</button>',
+            '    <button class="gl-btn gl-btn-load" data-url="' + escapeHtml(g.url) + '">Load</button>',
+            '    <button class="gl-btn gl-btn-del"  data-id="'  + g.id + '">Delete</button>',
             '  </div>',
             '</div>'
           ].join('');
         }).join('');
 
+    // Folder selector for save form
+    var folderOptions = '<option value="">Unfiled</option>' +
+      folders.map(function (f) {
+        return '<option value="' + escapeHtml(f.id) + '"' +
+          (currentFolder === f.id ? ' selected' : '') + '>' +
+          escapeHtml(f.name) + '</option>';
+      }).join('');
+
     panel.innerHTML = [
       '<div class="gl-header">',
-      '  <span class="gl-title"><i class="fa fa-music"></i>&nbsp; Groove Library</span>',
-      '  <button class="gl-close" id="glCloseBtn" title="Close">&times;</button>',
+      '  <span class="gl-title">&#127925; Groove Library</span>',
+      '  <button class="gl-close" id="glCloseBtn">&times;</button>',
       '</div>',
-      '<div class="gl-save-form">',
-      '  <input class="gl-input" id="glNameInput" type="text" placeholder="Groove name..." maxlength="80">',
-      '  <input class="gl-input" id="glTagsInput" type="text" placeholder="Tags (comma-separated)..." maxlength="120">',
-      '  <button class="gl-btn gl-btn-save" id="glSaveBtn"><i class="fa fa-save"></i> Save current groove</button>',
-      '</div>',
-      '<div class="gl-search-row">',
-      '  <input class="gl-input" id="glSearchInput" type="text" placeholder="Search by name or tag..." value="' + escapeHtml(query || '') + '">',
-      '  <span class="gl-count">' + grooves.length + ' groove' + (grooves.length !== 1 ? 's' : '') + '</span>',
-      '</div>',
-      '<div class="gl-list">' + rows + '</div>'
+      '<div class="gl-body">',
+      '  <!-- Folder sidebar -->',
+      '  <div class="gl-sidebar">',
+      '    <div class="gl-sidebar-title">FOLDERS</div>',
+      folderItems,
+      userFolderItems,
+      '    <button class="gl-new-folder-btn" id="glNewFolderBtn">+ New folder</button>',
+      '  </div>',
+      '  <!-- Main content -->',
+      '  <div class="gl-main">',
+      '    <div class="gl-save-form">',
+      '      <input class="gl-input" id="glNameInput" type="text" placeholder="Groove name..." maxlength="80">',
+      '      <select class="gl-input gl-folder-select" id="glFolderSelect">' + folderOptions + '</select>',
+      '      <button class="gl-btn gl-btn-save" id="glSaveBtn">&#128190; Save current groove</button>',
+      '    </div>',
+      '    <div class="gl-count-row">',
+      '      <span class="gl-count">' + grooves.length + ' groove' + (grooves.length !== 1 ? 's' : '') + '</span>',
+      '    </div>',
+      '    <div class="gl-list">' + rows + '</div>',
+      '  </div>',
+      '</div>'
     ].join('');
 
-    /* ---- Event listeners ---- */
+    /* ---- Events ---- */
 
-    document.getElementById('glCloseBtn').addEventListener('click', hidePanel);
+    panel.querySelector('#glCloseBtn').addEventListener('click', hidePanel);
 
-    document.getElementById('glSaveBtn').addEventListener('click', function () {
-      var name   = document.getElementById('glNameInput').value.trim();
-      var tags   = document.getElementById('glTagsInput').value.trim();
+    // Folder clicks
+    panel.querySelectorAll('.gl-folder-item').forEach(function (item) {
+      item.addEventListener('click', function (e) {
+        if (e.target.classList.contains('gl-folder-del')) return;
+        currentFolder = item.getAttribute('data-fid');
+        renderPanel();
+      });
+    });
+
+    // Delete folder buttons
+    panel.querySelectorAll('.gl-folder-del').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        var fid  = btn.getAttribute('data-fid');
+        var name = loadFolders().filter(function(f){return f.id===fid;})[0];
+        if (name && confirm('Delete folder "' + name.name + '"?\nGrooves will be moved to Unfiled.')) {
+          deleteFolder(fid);
+          if (currentFolder === fid) currentFolder = ALL_FOLDER_ID;
+          renderPanel();
+        }
+      });
+    });
+
+    // New folder button
+    panel.querySelector('#glNewFolderBtn').addEventListener('click', function () {
+      var name = prompt('Folder name:');
+      if (!name) return;
+      var created = createFolder(name);
+      if (!created) { alert('Folder already exists or invalid name.'); return; }
+      currentFolder = created.id;
+      renderPanel();
+    });
+
+    // Save groove
+    panel.querySelector('#glSaveBtn').addEventListener('click', function () {
+      var name   = panel.querySelector('#glNameInput').value.trim();
+      var folder = panel.querySelector('#glFolderSelect').value;
       var urlStr = window.location.search || '';
-
-      // Try to get the live URL from GrooveWriter if available
       if (window.myGrooveWriter && window.myGrooveWriter.updateCurrentURL) {
         window.myGrooveWriter.updateCurrentURL();
         urlStr = window.location.search;
       }
-
-      if (!urlStr) {
-        alert('Nothing to save - create a groove first.');
-        return;
-      }
-
-      saveGroove(name || 'Untitled', tags, urlStr);
-      renderPanel(document.getElementById('glSearchInput') ? document.getElementById('glSearchInput').value : '');
+      if (!urlStr) { alert('Nothing to save - create a groove first.'); return; }
+      saveGroove(name || 'Untitled', folder, urlStr);
+      renderPanel();
     });
 
-    document.getElementById('glSearchInput').addEventListener('input', function () {
-      renderPanel(this.value);
-    });
-
+    // Load groove
     panel.querySelectorAll('.gl-btn-load').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var url = btn.getAttribute('data-url');
-        if (url) {
-          window.location.search = url;
-        }
+        if (url) window.location.search = url;
       });
     });
 
+    // Delete groove
     panel.querySelectorAll('.gl-btn-del').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var id = btn.getAttribute('data-id');
+        var id  = btn.getAttribute('data-id');
         var row = panel.querySelector('.gl-row[data-id="' + id + '"]');
-        var name = row ? row.querySelector('.gl-name').textContent : 'this groove';
-        if (confirm('Delete "' + name + '"?')) {
-          deleteGroove(id);
-          renderPanel(document.getElementById('glSearchInput') ? document.getElementById('glSearchInput').value : '');
-        }
+        var nm  = row ? row.querySelector('.gl-name').textContent : 'this groove';
+        if (confirm('Delete "' + nm + '"?')) { deleteGroove(id); renderPanel(); }
       });
     });
   }
 
-  /* ---- Show / hide panel ---- */
+  /* ================================================================
+   * Show / hide
+   * ================================================================ */
 
   function showPanel() {
     var panel = document.getElementById(PANEL_ID);
@@ -193,7 +287,7 @@
     }
     panel.style.display = 'flex';
     panel.style.flexDirection = 'column';
-    renderPanel('');
+    renderPanel();
   }
 
   function hidePanel() {
@@ -203,24 +297,19 @@
 
   function togglePanel() {
     var panel = document.getElementById(PANEL_ID);
-    if (panel && panel.style.display !== 'none') {
-      hidePanel();
-    } else {
-      showPanel();
-    }
+    if (panel && panel.style.display !== 'none') hidePanel();
+    else showPanel();
   }
 
-  /* ---- Expose on window ---- */
+  /* ================================================================
+   * Expose
+   * ================================================================ */
 
   window.GrooveLibrary = {
-    show:   showPanel,
-    hide:   hidePanel,
-    toggle: togglePanel,
-    save:   saveGroove,
-    delete: deleteGroove,
-    rename: renameGroove,
-    search: searchGrooves,
-    all:    loadAll
+    show: showPanel, hide: hidePanel, toggle: togglePanel,
+    save: saveGroove, delete: deleteGroove,
+    createFolder: createFolder, deleteFolder: deleteFolder,
+    all: loadAll, folders: loadFolders
   };
 
 }());
