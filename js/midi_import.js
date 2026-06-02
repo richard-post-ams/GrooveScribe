@@ -1,40 +1,27 @@
 /* =======================================================
- * GrooveScribe MIDI Importer
- * Parses a standard GM MIDI file, extracts the drum track
- * (channel 10), quantises to 8th or 16th grid, builds the
- * H/S/K URL arrays and loads the groove into the editor.
+ * GrooveScribe MIDI Importer v2
+ * - Bar selection: All / Specific / Range
+ * - Filename parsed for Title/Author → shown in notation
  * ======================================================= */
 (function () {
   'use strict';
 
   var PANEL_ID = 'midiImportPanel';
 
-  /* ---- GM drum note → GrooveScribe instrument ---- */
   var NOTE_MAP = {
-    // Kick
     35: 'kick', 36: 'kick',
-    // Snare
     38: 'snare', 40: 'snare', 37: 'snare_ghost',
-    // Hi-hat
     42: 'hh_normal', 44: 'hh_foot', 46: 'hh_open',
-    // Crash (map to HH line as crash)
     49: 'crash', 57: 'crash',
-    // Ride (map to HH line as ride)
     51: 'ride', 53: 'ride_bell'
   };
 
-  /* ---- Public API ---- */
-  window.MidiImport = {
-    toggle: togglePanel
-  };
+  window.MidiImport = { toggle: togglePanel };
 
   /* ---- Panel ---- */
   function togglePanel() {
     var panel = document.getElementById(PANEL_ID);
-    if (!panel) {
-      buildPanel();
-      panel = document.getElementById(PANEL_ID);
-    }
+    if (!panel) { buildPanel(); panel = document.getElementById(PANEL_ID); }
     var visible = panel.style.display !== 'none' && panel.style.display !== '';
     panel.style.display = visible ? 'none' : 'flex';
   }
@@ -42,6 +29,14 @@
   function hidePanel() {
     var panel = document.getElementById(PANEL_ID);
     if (panel) panel.style.display = 'none';
+  }
+
+  function barOptions(selectedVal) {
+    var opts = '';
+    for (var i = 1; i <= 32; i++) {
+      opts += '<option value="' + i + '"' + (i === selectedVal ? ' selected' : '') + '>Bar ' + i + '</option>';
+    }
+    return opts;
   }
 
   function buildPanel() {
@@ -61,34 +56,21 @@
       '      <option value="8">8th notes</option>',
       '    </select>',
       '  </div>',
-      '  <div class="mi-row">',
-      '    <label class="mi-label">Bar to import</label>',
-      '    <select class="mi-select" id="miBar">',
-      '      <option value="0">Bar 1</option>',
-      '      <option value="1">Bar 2</option>',
-      '      <option value="2">Bar 3</option>',
-      '      <option value="3">Bar 4</option>',
-      '      <option value="4">Bar 5</option>',
-      '      <option value="5">Bar 6</option>',
-      '      <option value="6">Bar 7</option>',
-      '      <option value="7">Bar 8</option>',
-      '      <option value="8">Bar 9</option>',
-      '      <option value="9">Bar 10</option>',
-      '      <option value="10">Bar 11</option>',
-      '      <option value="11">Bar 12</option>',
-      '      <option value="12">Bar 13</option>',
-      '      <option value="13">Bar 14</option>',
-      '      <option value="14">Bar 15</option>',
-      '      <option value="15">Bar 16</option>',
-      '    </select>',
+      '  <div class="mi-row mi-row-top">',
+      '    <label class="mi-label">Bar selection</label>',
       '  </div>',
-      '  <div class="mi-row">',
-      '    <label class="mi-label">Measures to load</label>',
-      '    <select class="mi-select" id="miMeasures">',
-      '      <option value="1">1</option>',
-      '      <option value="2">2</option>',
-      '      <option value="4">4</option>',
-      '    </select>',
+      '  <div class="mi-bar-modes">',
+      '    <label class="mi-radio-label"><input type="radio" name="miBarMode" value="all" checked> All bars</label>',
+      '    <label class="mi-radio-label"><input type="radio" name="miBarMode" value="specific"> Specific bar</label>',
+      '    <label class="mi-radio-label"><input type="radio" name="miBarMode" value="range"> Bar range</label>',
+      '  </div>',
+      '  <div class="mi-bar-options" id="miBarSpecific" style="display:none;">',
+      '    <select class="mi-select" id="miBarSingle">' + barOptions(1) + '</select>',
+      '  </div>',
+      '  <div class="mi-bar-options mi-bar-range-row" id="miBarRange" style="display:none;">',
+      '    <select class="mi-select" id="miBarFrom">' + barOptions(1) + '</select>',
+      '    <span class="mi-range-sep">to</span>',
+      '    <select class="mi-select" id="miBarTo">' + barOptions(4) + '</select>',
       '  </div>',
       '  <label class="mi-file-btn" id="miFileLabel">',
       '    &#128194; Choose MIDI file',
@@ -102,23 +84,57 @@
     document.body.appendChild(panel);
 
     panel.querySelector('#miCloseBtn').addEventListener('click', hidePanel);
+
+    // Bar mode radio buttons
+    panel.querySelectorAll('input[name="miBarMode"]').forEach(function (radio) {
+      radio.addEventListener('change', function () {
+        document.getElementById('miBarSpecific').style.display = this.value === 'specific' ? 'block' : 'none';
+        document.getElementById('miBarRange').style.display    = this.value === 'range'    ? 'flex'  : 'none';
+      });
+    });
+
     panel.querySelector('#miFileInput').addEventListener('change', function (e) {
       var file = e.target.files[0];
       if (!file) return;
       document.getElementById('miFilename').textContent = file.name;
       document.getElementById('miStatus').textContent = '';
+
       var reader = new FileReader();
       reader.onload = function (ev) {
         try {
-          var grid     = parseInt(document.getElementById('miGrid').value, 10);
-          var barStart = parseInt(document.getElementById('miBar').value, 10);
-          var numBars  = parseInt(document.getElementById('miMeasures').value, 10);
-          var url      = parseMidi(new Uint8Array(ev.target.result), grid, barStart, numBars);
-          document.getElementById('miStatus').textContent = 'Loaded! Opening groove...';
-          setTimeout(function () {
-            hidePanel();
-            window.location.search = url;
-          }, 600);
+          var grid    = parseInt(document.getElementById('miGrid').value, 10);
+          var mode    = panel.querySelector('input[name="miBarMode"]:checked').value;
+          var bytes   = new Uint8Array(ev.target.result);
+
+          // Parse to count total bars first
+          var parsed      = parseMidiData(bytes);
+          var totalBars   = parsed.totalBars;
+          var barStart, numBars;
+
+          if (mode === 'all') {
+            barStart = 0;
+            numBars  = Math.min(totalBars, 32); // cap at 32 (our max measures)
+          } else if (mode === 'specific') {
+            barStart = parseInt(document.getElementById('miBarSingle').value, 10) - 1;
+            numBars  = 1;
+          } else {
+            barStart = parseInt(document.getElementById('miBarFrom').value, 10) - 1;
+            var barEnd = parseInt(document.getElementById('miBarTo').value, 10);
+            numBars  = Math.max(1, barEnd - barStart);
+          }
+
+          // Clamp to available bars
+          if (barStart >= totalBars) barStart = 0;
+          if (barStart + numBars > totalBars) numBars = totalBars - barStart;
+          if (numBars < 1) numBars = 1;
+
+          var titleInfo = parseFilename(file.name);
+          var url = buildGrooveUrl(parsed, grid, barStart, numBars, titleInfo);
+
+          document.getElementById('miStatus').textContent =
+            'Found ' + totalBars + ' bars. Loading ' + numBars + ' bar' + (numBars > 1 ? 's' : '') + '...';
+
+          setTimeout(function () { hidePanel(); window.location.search = url; }, 700);
         } catch (err) {
           document.getElementById('miStatus').textContent = 'Error: ' + err.message;
           console.error('[MidiImport]', err);
@@ -129,161 +145,153 @@
   }
 
   /* ================================================================
-   * MIDI Parser
+   * Filename parser  →  { title, author }
+   * Handles: "Artist - Title.mid", "Title.mid", "Artist_Title.mid"
    * ================================================================ */
-  function parseMidi(bytes, grid, barStart, numBars) {
+  function parseFilename(filename) {
+    // Remove extension
+    var base = filename.replace(/\.(mid|midi)$/i, '').trim();
+
+    // Common separators: " - ", " – ", "_-_"
+    var dashMatch = base.match(/^(.+?)\s*[-–]\s*(.+)$/);
+    if (dashMatch) {
+      return { author: cleanStr(dashMatch[1]), title: cleanStr(dashMatch[2]) };
+    }
+
+    // Underscore separator: Artist_Title
+    var underMatch = base.match(/^([A-Z][a-z]+(?:_[A-Z][a-z]+)*)_(.+)$/);
+    if (underMatch) {
+      return { author: cleanStr(underMatch[1].replace(/_/g,' ')), title: cleanStr(underMatch[2].replace(/_/g,' ')) };
+    }
+
+    // No separator — treat whole thing as title
+    return { author: '', title: cleanStr(base) };
+  }
+
+  function cleanStr(s) {
+    return s.replace(/[_]/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  /* ================================================================
+   * MIDI Parser — returns { tempo, ticksPerBeat, allNotes, totalBars }
+   * ================================================================ */
+  function parseMidiData(bytes) {
     var pos = 0;
 
-    function read(n) {
-      var slice = bytes.slice(pos, pos + n);
-      pos += n;
-      return slice;
-    }
-    function readUint32() {
-      var b = read(4);
-      return (b[0] << 24) | (b[1] << 16) | (b[2] << 8) | b[3];
-    }
-    function readUint16() {
-      var b = read(2);
-      return (b[0] << 8) | b[1];
-    }
+    function read(n)      { var s = bytes.slice(pos, pos+n); pos+=n; return s; }
+    function readUint32() { var b=read(4); return (b[0]<<24)|(b[1]<<16)|(b[2]<<8)|b[3]; }
+    function readUint16() { var b=read(2); return (b[0]<<8)|b[1]; }
     function readVarLen() {
-      var val = 0, b;
-      do { b = bytes[pos++]; val = (val << 7) | (b & 0x7f); } while (b & 0x80);
+      var val=0, b;
+      do { b=bytes[pos++]; val=(val<<7)|(b&0x7f); } while (b&0x80);
       return val;
     }
 
-    // Header
     if (String.fromCharCode.apply(null, read(4)) !== 'MThd') throw new Error('Not a MIDI file');
-    readUint32(); // header length (always 6)
-    var format   = readUint16();
-    var numTracks = readUint16();
+    readUint32();
+    readUint16(); // format
+    var numTracks    = readUint16();
     var ticksPerBeat = readUint16();
     if (ticksPerBeat & 0x8000) throw new Error('SMPTE timecode not supported');
 
-    // Parse all tracks, collect note-on events on channel 9 (0-indexed = ch10)
-    var tempo     = 500000; // default 120 BPM
-    var allNotes  = []; // {tick, note, velocity}
+    var tempo    = 500000;
+    var allNotes = [];
+    var maxTick  = 0;
 
     for (var t = 0; t < numTracks; t++) {
       if (String.fromCharCode.apply(null, read(4)) !== 'MTrk') throw new Error('Bad track header');
       var trackLen = readUint32();
       var trackEnd = pos + trackLen;
-      var tick = 0;
-      var lastStatus = 0;
+      var tick = 0, lastStatus = 0;
 
       while (pos < trackEnd) {
-        var delta = readVarLen();
-        tick += delta;
+        tick += readVarLen();
         var statusByte = bytes[pos];
-
-        if (statusByte & 0x80) {
-          lastStatus = statusByte;
-          pos++;
-        } else {
-          statusByte = lastStatus; // running status
-        }
+        if (statusByte & 0x80) { lastStatus = statusByte; pos++; }
+        else { statusByte = lastStatus; }
 
         var type    = (statusByte & 0xf0) >> 4;
         var channel = statusByte & 0x0f;
 
         if (type === 0x0f) {
-          // Meta event
           var metaType = bytes[pos++];
           var metaLen  = readVarLen();
-          if (metaType === 0x51 && metaLen === 3) {
-            // Tempo
-            tempo = (bytes[pos] << 16) | (bytes[pos+1] << 8) | bytes[pos+2];
-          }
+          if (metaType === 0x51 && metaLen === 3)
+            tempo = (bytes[pos]<<16)|(bytes[pos+1]<<8)|bytes[pos+2];
           pos += metaLen;
-        } else if (type === 0x0f - 1) {
+        } else if (type === 0x0e) {
           // SysEx
-          var sysexLen = readVarLen();
-          pos += sysexLen;
+          pos += readVarLen();
         } else if (type === 0x09 && channel === 9) {
-          // Note-on on channel 10 (drums)
-          var note = bytes[pos++];
-          var vel  = bytes[pos++];
-          if (vel > 0) {
-            allNotes.push({ tick: tick, note: note, velocity: vel });
-          }
-        } else if (type === 0x09 || type === 0x08) {
-          pos += 2;
-        } else if (type === 0x0a || type === 0x0b || type === 0x0e) {
+          var note = bytes[pos++], vel = bytes[pos++];
+          if (vel > 0) { allNotes.push({tick:tick, note:note, velocity:vel}); if (tick>maxTick) maxTick=tick; }
+        } else if (type === 0x09 || type === 0x08 || type === 0x0a || type === 0x0b || type === 0x0e) {
           pos += 2;
         } else if (type === 0x0c || type === 0x0d) {
           pos += 1;
-        } else {
-          pos++; // unknown, skip one byte
-        }
+        } else { pos++; }
       }
       pos = trackEnd;
     }
 
-    if (allNotes.length === 0) throw new Error('No drum notes found. Make sure the MIDI file has a drum track (channel 10).');
+    if (allNotes.length === 0) throw new Error('No drum notes found. Is this a GM MIDI file with drums on channel 10?');
 
-    // Calculate ticks per bar and per grid slot
-    var bpm           = Math.round(60000000 / tempo);
-    var ticksPerBar   = ticksPerBeat * 4; // assumes 4/4
-    var slotsPerBar   = grid;             // 8 or 16
-    var ticksPerSlot  = ticksPerBeat * 4 / slotsPerBar;
-    var totalSlots    = slotsPerBar * numBars;
-    var startTick     = barStart * ticksPerBar;
-    var endTick       = startTick + numBars * ticksPerBar;
+    var ticksPerBar = ticksPerBeat * 4;
+    var totalBars   = Math.ceil((maxTick + ticksPerBar) / ticksPerBar);
 
-    // Build empty arrays
+    return { tempo: tempo, ticksPerBeat: ticksPerBeat, allNotes: allNotes, totalBars: totalBars };
+  }
+
+  /* ================================================================
+   * Build groove URL from parsed data
+   * ================================================================ */
+  function buildGrooveUrl(parsed, grid, barStart, numBars, titleInfo) {
+    var ticksPerBeat = parsed.ticksPerBeat;
+    var ticksPerBar  = ticksPerBeat * 4;
+    var ticksPerSlot = ticksPerBeat * 4 / grid;
+    var totalSlots   = grid * numBars;
+    var startTick    = barStart * ticksPerBar;
+    var endTick      = startTick + numBars * ticksPerBar;
+    var bpm          = Math.round(60000000 / parsed.tempo);
+
     var hhArr = [], snArr = [], kArr = [];
-    for (var i = 0; i < totalSlots; i++) {
-      hhArr.push('-'); snArr.push('-'); kArr.push('-');
-    }
+    for (var i = 0; i < totalSlots; i++) { hhArr.push('-'); snArr.push('-'); kArr.push('-'); }
 
-    // Quantise and place notes
-    allNotes.forEach(function (ev) {
+    parsed.allNotes.forEach(function (ev) {
       if (ev.tick < startTick || ev.tick >= endTick) return;
-      var relTick  = ev.tick - startTick;
-      var slot     = Math.round(relTick / ticksPerSlot);
+      var slot = Math.round((ev.tick - startTick) / ticksPerSlot);
       if (slot >= totalSlots) slot = totalSlots - 1;
-      var inst     = NOTE_MAP[ev.note];
+      var inst = NOTE_MAP[ev.note];
       if (!inst) return;
-      var vel      = ev.velocity;
-      var isAccent = vel >= 100;
-      var isGhost  = vel < 50;
+      var isAccent = ev.velocity >= 100, isGhost = ev.velocity < 50;
 
-      if (inst === 'kick') {
-        kArr[slot] = 'o';
-      } else if (inst === 'snare') {
-        snArr[slot] = isAccent ? 'O' : isGhost ? 'g' : 'o';
-      } else if (inst === 'snare_ghost') {
-        if (snArr[slot] === '-') snArr[slot] = 'g';
-      } else if (inst === 'hh_normal') {
-        hhArr[slot] = isAccent ? 'X' : 'x';
-      } else if (inst === 'hh_open') {
-        hhArr[slot] = 'o';
-      } else if (inst === 'hh_foot') {
-        if (hhArr[slot] === '-') hhArr[slot] = '+';
-      } else if (inst === 'crash') {
-        hhArr[slot] = 'c';
-      } else if (inst === 'ride') {
-        hhArr[slot] = 'r';
-      }
+      if      (inst === 'kick')       kArr[slot] = 'o';
+      else if (inst === 'snare')      snArr[slot] = isAccent ? 'O' : isGhost ? 'g' : 'o';
+      else if (inst === 'snare_ghost' && snArr[slot] === '-') snArr[slot] = 'g';
+      else if (inst === 'hh_normal')  hhArr[slot] = isAccent ? 'X' : 'x';
+      else if (inst === 'hh_open')    hhArr[slot] = 'o';
+      else if (inst === 'hh_foot' && hhArr[slot] === '-') hhArr[slot] = '+';
+      else if (inst === 'crash')      hhArr[slot] = 'c';
+      else if (inst === 'ride')       hhArr[slot] = 'r';
     });
 
-    // Split into measure chunks for URL encoding
-    function buildMeasureStr(arr) {
+    function measureStr(arr) {
       var out = '';
-      for (var m = 0; m < numBars; m++) {
-        out += '|' + arr.slice(m * slotsPerBar, (m + 1) * slotsPerBar).join('');
-      }
+      for (var m = 0; m < numBars; m++)
+        out += '|' + arr.slice(m * grid, (m + 1) * grid).join('');
       return out + '|';
     }
 
     var url = '?TimeSig=4/4'
-      + '&Div=' + grid
-      + '&Tempo=' + bpm
-      + '&Measures=' + numBars
-      + '&H=' + buildMeasureStr(hhArr)
-      + '&S=' + buildMeasureStr(snArr)
-      + '&K=' + buildMeasureStr(kArr);
+      + '&Div='     + grid
+      + '&Tempo='   + bpm
+      + '&Measures='+ numBars
+      + '&H='       + measureStr(hhArr)
+      + '&S='       + measureStr(snArr)
+      + '&K='       + measureStr(kArr);
+
+    if (titleInfo.title)  url += '&Title='  + encodeURIComponent(titleInfo.title);
+    if (titleInfo.author) url += '&Author=' + encodeURIComponent(titleInfo.author);
 
     return url;
   }
