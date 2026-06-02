@@ -100,3 +100,29 @@
   text-align: center;
   min-height: 18px;
 }
+
+.mi-row-top { margin-bottom: 4px; }
+.mi-bar-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 0 6px 0;
+}
+.mi-radio-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #ccc;
+  cursor: pointer;
+}
+.mi-radio-label input { cursor: pointer; accent-color: #f5821f; }
+.mi-bar-options { margin-top: 4px; }
+.mi-bar-range-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+.mi-range-sep { font-size: 13px; color: #888; }
+
