@@ -2823,7 +2823,10 @@ function GrooveUtils() {
 			global_last_midi_update_time = 0;
 			root.midiEventCallbacks.loadMidiDataEvent(root.midiEventCallbacks.classRoot, true);
 			MIDI.Player.stop();
-			MIDI.Player.loop(root.shouldMIDIRepeat); // set the loop parameter
+			// When A-B loop is active, disable native player loop so ourMIDICallback
+			// can regenerate MIDI for the correct range on each repeat
+			var useNativeLoop = root.shouldMIDIRepeat && !(window.ABLoop && window.ABLoop.isActive());
+			MIDI.Player.loop(useNativeLoop); // set the loop parameter
 			MIDI.Player.start();
 		}
 		root.midiEventCallbacks.playEvent(root.midiEventCallbacks.classRoot);
@@ -2970,12 +2973,9 @@ function GrooveUtils() {
 					window.ProgressiveMetronome.onRepeat(root);
 				}
 
-				// If A-B loop is active, always regenerate MIDI so the range is respected
+				// If A-B loop is active, force MIDI regeneration so the range is respected
 				if (window.ABLoop && window.ABLoop.isActive()) {
-					console.log('[AB-repeat] active, forcing refresh. start='+window.ABLoop.getStart()+' end='+window.ABLoop.getEnd());
 					root.midiNoteHasChanged();
-				} else {
-					console.log('[AB-repeat] NOT active');
 				}
 				// regenerate the MIDI if the data needs refreshing or the OffsetClick is rotating every time
 				// advanceMetronomeOptionsOffsetClickStartRotation will return false if not rotating
