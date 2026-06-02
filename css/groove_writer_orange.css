@@ -1276,10 +1276,6 @@
 
 	/* Fullscreen notation button */
 	#sheetFullscreenBtn {
-		position: absolute;
-		top: 4px;
-		right: 8px;
-		z-index: 200;
 		background: rgba(0,0,0,0.10);
 		border: 1px solid #bbb;
 		border-radius: 5px;
@@ -1296,6 +1292,7 @@
 		touch-action: manipulation;
 		-webkit-tap-highlight-color: rgba(0,0,0,0);
 		transition: background 0.15s, color 0.15s;
+		flex-shrink: 0;
 	}
 	#sheetFullscreenBtn:hover,
 	#sheetFullscreenBtn:active {
@@ -1303,7 +1300,21 @@
 		color: #000;
 	}
 
-	/* sheetMusicDiv needs position:relative so the button is anchored */
+	/* sheetTopBar: one flex row containing nav bar + fullscreen button */
+	#sheetTopBar {
+		display: flex;
+		align-items: center;
+		background: #f0f0f0;
+		border-bottom: 1px solid #ddd;
+		min-height: 40px;
+	}
+	#sheetTopBarRight {
+		margin-left: auto;
+		display: flex;
+		align-items: center;
+		padding-right: 4px;
+		flex-shrink: 0;
+	}
 	#sheetMusicDiv {
 		position: relative;
 	}
@@ -1339,28 +1350,23 @@
 		margin: 0 auto !important;
 	}
 
-	/* Exit button styling in fullscreen */
-	#sheetMusicDiv.sheet-fullscreen #sheetFullscreenBtn {
-		position: fixed !important;
-		top: 12px !important;
-		right: 16px !important;
-		width: 36px !important;
-		height: 36px !important;
-		font-size: 20px !important;
-		background: rgba(0,0,0,0.15) !important;
-		z-index: 10000 !important;
+	/* In fullscreen: sheetTopBar sits at top */
+	#sheetMusicDiv.sheet-fullscreen #sheetTopBar {
+		position: sticky;
+		top: 0;
+		z-index: 10000;
+		background: #f0f0f0;
+		border-bottom: 1px solid #ddd;
 	}
 
 	/* Trainer prev/next navigation bar in sheet music area */
 	#trainerNavBar {
 		display: none;
 		align-items: center;
-		justify-content: space-between;
-		gap: 12px;
-		padding: 6px 56px 6px 12px;
-		background: #f0f0f0;
-		border-bottom: 1px solid #ddd;
+		gap: 10px;
+		padding: 4px 12px;
 		font-family: 'Lato', Calibri, sans-serif;
+		flex: 1;
 	}
 	#trainerNavBar button {
 		background: #f5821f;
@@ -1379,9 +1385,18 @@
 		background: #ccc;
 		cursor: default;
 	}
+#trainerNavBadge {
+		font-size: 11px;
+		font-weight: 900;
+		letter-spacing: 1.5px;
+		color: #f5821f;
+		text-transform: uppercase;
+		flex-shrink: 0;
+		white-space: nowrap;
+	}
 	#trainerNavLabel {
 		flex: 1;
-		text-align: center;
+		text-align: left;
 		font-size: 13px;
 		font-weight: 700;
 		color: #333;
