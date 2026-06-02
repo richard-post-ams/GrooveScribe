@@ -1,18 +1,35 @@
 /* =======================================================
  * GrooveScribe A-B Loop - Improvement #6
- * Adds a visual A/B marker per measure. When both markers
- * are set, playback loops only the selected range.
- *
- * Fix: buttons are injected via MutationObserver on
- * measureContainer so load order doesn't matter.
+ * - Per-measure A/B marker buttons
+ * - State persisted in sessionStorage across URL reloads
+ * - Yellow highlight on measures inside the range
+ * - Loops only the selected range during playback
  * ======================================================= */
 
 (function () {
   'use strict';
 
-  /* ---- State ---- */
+  /* ---- State (restored from sessionStorage on load) ---- */
   var abLoopStart = null;
   var abLoopEnd   = null;
+
+  function loadState() {
+    try {
+      var s = parseInt(sessionStorage.getItem('ab_start'), 10);
+      var e = parseInt(sessionStorage.getItem('ab_end'),   10);
+      abLoopStart = isNaN(s) ? null : s;
+      abLoopEnd   = isNaN(e) ? null : e;
+    } catch(ex) {}
+  }
+
+  function saveState() {
+    try {
+      if (abLoopStart !== null) sessionStorage.setItem('ab_start', abLoopStart);
+      else sessionStorage.removeItem('ab_start');
+      if (abLoopEnd !== null) sessionStorage.setItem('ab_end', abLoopEnd);
+      else sessionStorage.removeItem('ab_end');
+    } catch(ex) {}
+  }
 
   /* ---- Public API ---- */
   window.ABLoop = {
@@ -41,8 +58,9 @@
         abLoopEnd = measureIndex;
       }
     }
+    saveState();
     updateUI();
-    // Force MIDI reload so the loop range takes effect immediately
+    // Reload the groove so the MIDI range takes effect
     if (window.myGrooveWriter && window.myGrooveWriter.updateCurrentURL) {
       window.myGrooveWriter.updateCurrentURL();
     }
@@ -51,6 +69,7 @@
   function clear() {
     abLoopStart = null;
     abLoopEnd   = null;
+    saveState();
     updateUI();
     if (window.myGrooveWriter && window.myGrooveWriter.updateCurrentURL) {
       window.myGrooveWriter.updateCurrentURL();
@@ -86,7 +105,7 @@
   function injectButtonIntoContainer(container) {
     var measureIndex = parseInt(container.id.replace('staff-container', ''), 10);
     if (isNaN(measureIndex)) return;
-    if (container.querySelector('.ab-loop-btn')) return; // already injected
+    if (container.querySelector('.ab-loop-btn')) return;
 
     var btn = document.createElement('span');
     btn.className = 'ab-loop-btn';
@@ -97,7 +116,6 @@
       setMarker(measureIndex);
     });
 
-    // Append after the closeMeasureButton span
     var closeBtn = container.querySelector('.closeMeasureButton');
     if (closeBtn && closeBtn.parentNode) {
       closeBtn.parentNode.insertBefore(btn, closeBtn.nextSibling);
@@ -106,28 +124,25 @@
     }
   }
 
-  /* ---- Inject buttons into all existing measure containers ---- */
+  /* ---- Inject buttons into all measure containers ---- */
   function injectButtons() {
-    var containers = document.querySelectorAll('[id^="staff-container"]');
-    containers.forEach(function (c) {
+    document.querySelectorAll('[id^="staff-container"]').forEach(function (c) {
       injectButtonIntoContainer(c);
     });
     updateUI();
   }
 
-  /* ---- Watch for new measures being added/removed ---- */
+  /* ---- Watch for new measures added/removed ---- */
   function observeMeasureContainer() {
-    var measureContainer = document.getElementById('measureContainer');
-    if (!measureContainer) return;
-
-    var observer = new MutationObserver(function () {
-      injectButtons();
-    });
-    observer.observe(measureContainer, { childList: true, subtree: false });
+    var mc = document.getElementById('measureContainer');
+    if (!mc) return;
+    new MutationObserver(function () { injectButtons(); })
+      .observe(mc, { childList: true, subtree: false });
   }
 
-  /* ---- Update all button visuals and the player indicator ---- */
+  /* ---- Update button visuals + yellow range highlight + indicator ---- */
   function updateUI() {
+    // Update buttons
     document.querySelectorAll('.ab-loop-btn').forEach(function (btn) {
       var m = parseInt(btn.getAttribute('data-measure'), 10);
       btn.classList.remove('ab-a', 'ab-b', 'ab-range');
@@ -159,12 +174,25 @@
       }
     });
 
-    var clearBtn = document.getElementById('abLoopClearBtn');
-    if (clearBtn) {
-      clearBtn.style.display = window.ABLoop.isActive() ? 'inline-flex' : 'none';
-    }
+    // Yellow background on staff containers inside A-B range
+    document.querySelectorAll('[id^="staff-container"]').forEach(function (c) {
+      var m = parseInt(c.id.replace('staff-container', ''), 10);
+      c.classList.remove('ab-highlight-a', 'ab-highlight-b', 'ab-highlight-range');
+      if (abLoopStart !== null && abLoopEnd !== null) {
+        if      (m === abLoopStart)                   c.classList.add('ab-highlight-a');
+        else if (m === abLoopEnd)                     c.classList.add('ab-highlight-b');
+        else if (m > abLoopStart && m < abLoopEnd)    c.classList.add('ab-highlight-range');
+      } else if (abLoopStart !== null && m === abLoopStart) {
+        c.classList.add('ab-highlight-a');
+      }
+    });
 
+    // Player bar indicator and clear button
+    var clearBtn  = document.getElementById('abLoopClearBtn');
     var indicator = document.getElementById('abLoopIndicator');
+
+    if (clearBtn)  clearBtn.style.display  = window.ABLoop.isActive() ? 'inline-flex' : 'none';
+
     if (indicator) {
       if (window.ABLoop.isActive()) {
         indicator.textContent = 'A-B: M' + abLoopStart + '\u2013M' + abLoopEnd;
@@ -178,8 +206,9 @@
     }
   }
 
-  /* ---- Init on DOMContentLoaded ---- */
+  /* ---- Init ---- */
   function init() {
+    loadState();
     injectButtons();
     observeMeasureContainer();
   }
