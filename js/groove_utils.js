@@ -2970,6 +2970,10 @@ function GrooveUtils() {
 					window.ProgressiveMetronome.onRepeat(root);
 				}
 
+				// If A-B loop is active, always regenerate MIDI so the range is respected
+				if (window.ABLoop && window.ABLoop.isActive()) {
+					root.midiNoteHasChanged();
+				}
 				// regenerate the MIDI if the data needs refreshing or the OffsetClick is rotating every time
 				// advanceMetronomeOptionsOffsetClickStartRotation will return false if not rotating
 				if (root.advanceMetronomeOptionsOffsetClickStartRotation() || root.midiEventCallbacks.doesMidiDataNeedRefresh(root.midiEventCallbacks.classRoot)) {
