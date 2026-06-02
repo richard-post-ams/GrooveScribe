@@ -828,38 +828,57 @@ function GrooveWriter() {
 		var el = document.getElementById("musicalInput");
 		if (!el) return;
 
-		// Remove any existing clone
 		infinite_scroll_stop(false);
 
-		// Build clone of measureContainer and append it for seamless looping
 		var orig = document.getElementById("measureContainer");
 		if (!orig) return;
 
-		_scroll_orig_width = orig.scrollWidth;
-
-		var clone = orig.cloneNode(true);
-		clone.id = "measureContainerClone";
-		clone.style.display = "inline-block";
+		_scroll_orig_width  = orig.scrollWidth;
 		orig.style.display  = "inline-block";
 		el.style.whiteSpace = "nowrap";
-		el.appendChild(clone);
-		_scroll_clone = clone;
 
-		// Timing: px/ms so the active note moves across the full groove width in exactly one loop
+		// Keep a list of all tile nodes (orig + clones) so we can prune old ones
+		var tiles     = [orig];
+		var tile_count = 1; // how many tiles currently in DOM
+
+		// Timing
 		var tempo        = myGrooveWriter.myGrooveUtils.getTempo();
 		var beats        = class_num_beats_per_measure * class_number_of_measures;
 		var duration_ms  = (beats / tempo) * 60000;
 		var px_per_ms    = _scroll_orig_width / duration_ms;
 
-		// Hold-off: first 2 bars stay static, then start centring the active note
-		var bar_duration_ms  = duration_ms / class_number_of_measures;
-		var holdoff_ms       = bar_duration_ms * 2;
-		var holdoff_px       = px_per_ms * holdoff_ms; // groove pixels covered in 2 bars
-		var half_width       = el.clientWidth / 2;
+		// 2-bar holdoff
+		var holdoff_ms  = (duration_ms / Math.max(1, class_number_of_measures)) * 2;
+		var half_width  = el.clientWidth / 2;
 
 		_scroll_active  = true;
 		_scroll_last_ts = null;
-		var elapsed_ms  = 0; // total playback time since start
+		var elapsed_ms  = 0;
+		var total_px    = 0; // monotonically increasing scroll position
+
+		function addTile() {
+			var c = orig.cloneNode(true);
+			c.removeAttribute("id");
+			c.style.display = "inline-block";
+			el.appendChild(c);
+			tiles.push(c);
+			tile_count++;
+		}
+
+		function pruneTiles() {
+			// Remove tiles that are entirely left of the viewport (with 1 tile buffer)
+			while (tiles.length > 2 && tiles[0].getBoundingClientRect().right < el.getBoundingClientRect().left - _scroll_orig_width) {
+				var old = tiles.shift();
+				if (old.parentNode) old.parentNode.removeChild(old);
+				// Compensate scrollLeft so the view does not jump
+				el.scrollLeft -= _scroll_orig_width;
+				total_px      -= _scroll_orig_width;
+			}
+		}
+
+		// Pre-fill enough tiles to cover the viewport ahead
+		var tiles_needed = Math.ceil((el.clientWidth * 2) / _scroll_orig_width) + 3;
+		while (tile_count < tiles_needed) addTile();
 
 		function loop(timestamp) {
 			if (!_scroll_active) return;
@@ -867,23 +886,29 @@ function GrooveWriter() {
 			var delta    = timestamp - _scroll_last_ts;
 			_scroll_last_ts = timestamp;
 			elapsed_ms  += delta;
-
-			// Current playback position in groove pixels (wraps every orig_width)
-			var play_px  = (px_per_ms * elapsed_ms) % _scroll_orig_width;
+			total_px    += px_per_ms * delta;
 
 			var target;
 			if (elapsed_ms < holdoff_ms) {
 				// First 2 bars: no scroll
 				target = 0;
 			} else {
-				// Centre the active note: scroll so play_px sits at mid-screen
-				target = play_px - half_width;
+				// Keep active note centred
+				target = total_px - half_width;
 				if (target < 0) target = 0;
 			}
 
-			// Apply target scrollLeft; seamless wrap when target exceeds orig_width
-			if (target >= _scroll_orig_width) target -= _scroll_orig_width;
 			el.scrollLeft = target;
+
+			// Add a new tile when approaching the end of the last one
+			var last_tile_right = tiles[tiles.length - 1].getBoundingClientRect().right;
+			var cont_right      = el.getBoundingClientRect().right;
+			if (last_tile_right < cont_right + _scroll_orig_width) {
+				addTile();
+			}
+
+			// Prune tiles that have scrolled far off the left
+			pruneTiles();
 
 			_scroll_raf = requestAnimationFrame(loop);
 		}
@@ -893,19 +918,24 @@ function GrooveWriter() {
 	function infinite_scroll_stop(reset) {
 		_scroll_active = false;
 		if (_scroll_raf) { cancelAnimationFrame(_scroll_raf); _scroll_raf = null; }
-		// Remove clone
-		if (_scroll_clone && _scroll_clone.parentNode) {
-			_scroll_clone.parentNode.removeChild(_scroll_clone);
+		// Remove all cloned tiles (everything except measureContainer itself)
+		var el = document.getElementById("musicalInput");
+		if (el) {
+			var toRemove = el.querySelectorAll("[data-gs-tile]");
+			toRemove.forEach(function(n){ if(n.parentNode) n.parentNode.removeChild(n); });
+			// Also remove any inline-block clones that are not measureContainer
+			Array.prototype.slice.call(el.children).forEach(function(c){
+				if (c.id !== "measureContainer") {
+					c.parentNode.removeChild(c);
+				}
+			});
+			el.style.whiteSpace = "";
 		}
 		_scroll_clone = null;
-		// Restore inline-block display
 		var orig = document.getElementById("measureContainer");
 		if (orig) orig.style.display = "";
-		var el = document.getElementById("musicalInput");
-		if (el) el.style.whiteSpace = "";
 		if (reset !== false) {
-			var el2 = document.getElementById("musicalInput");
-			if (el2) el2.scrollLeft = 0;
+			if (el) el.scrollLeft = 0;
 		}
 	}
 
