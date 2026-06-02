@@ -94,7 +94,8 @@
 }
 
 .tr-exercise:hover {
-  background: #282828;
+  background: #333;
+  cursor: pointer;
 }
 
 .tr-exercise.tr-active {
@@ -125,44 +126,13 @@
   font-size: 13px;
   font-weight: 700;
   color: #f0f0f0;
-  margin-bottom: 3px;
+  flex: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.tr-ex-desc {
-  font-size: 12px;
-  color: #888;
-  line-height: 1.4;
-}
 
-.tr-load-btn {
-  flex-shrink: 0;
-  background: #2e5c8a;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  padding: 7px 12px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.15s;
-  font-family: 'Lato', Calibri, sans-serif;
-  white-space: nowrap;
-}
-
-.tr-load-btn:hover {
-  background: #3a7abd;
-}
-
-.tr-exercise.tr-active .tr-load-btn {
-  background: #2e7d32;
-}
-
-.tr-exercise.tr-active .tr-load-btn:hover {
-  background: #388e3c;
-}
 
 .tr-empty {
   padding: 24px;
