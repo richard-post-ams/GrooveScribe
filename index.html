@@ -152,12 +152,17 @@
 			<div class="Printable">
 				<!-- rendering area -->
 				<div id="sheetMusicDiv" class="fullWidthEle">
-					<div id="trainerNavBar" style="display:none;">
-						<button id="trainerNavPrev" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.prev();" title="Previous exercise">&#9664; Prev</button>
-						<span id="trainerNavLabel"></span>
-						<button id="trainerNavNext" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.next();" title="Next exercise">Next &#9654;</button>
+					<div id="sheetTopBar">
+						<div id="trainerNavBar" style="display:none;">
+							<button id="trainerNavPrev" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.prev();" title="Previous exercise">&#9664;</button>
+							<span id="trainerNavBadge">TRAINER</span>
+							<span id="trainerNavLabel"></span>
+							<button id="trainerNavNext" onclick="event.stopPropagation(); window.DrumTrainer && window.DrumTrainer.next();" title="Next exercise">&#9654;</button>
+						</div>
+						<div id="sheetTopBarRight">
+							<button id="sheetFullscreenBtn" title="Full screen notation" onclick="(function(e){ e.stopPropagation(); var d=document.getElementById('sheetMusicDiv'); d.classList.toggle('sheet-fullscreen'); document.getElementById('sheetFullscreenBtn').textContent = d.classList.contains('sheet-fullscreen') ? '\u2715' : '\u26f6'; })(event)">&#x26f6;</button>
+						</div>
 					</div>
-					<button id="sheetFullscreenBtn" title="Full screen notation" onclick="(function(){ var d=document.getElementById('sheetMusicDiv'); d.classList.toggle('sheet-fullscreen'); document.getElementById('sheetFullscreenBtn').textContent = d.classList.contains('sheet-fullscreen') ? '✕' : '⛶'; })()">&#x26f6;</button>
 					<div id="svgTarget" class="svgTarget">
 						<!-- space for the SVG sheet music to display -->
 					</div>
