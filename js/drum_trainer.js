@@ -112,6 +112,7 @@
     toggle:            togglePanel,
     next:              function () { navigate(1); },
     prev:              function () { navigate(-1); },
+    exit:              exitTraining,
     updateNavButtons:  updateNavButtons
   };
 
@@ -220,6 +221,25 @@
   /* ================================================================
    * Load a groove by setting window.location.search
    * ================================================================ */
+  function exitTraining() {
+    currentCat = null;
+    currentIdx = -1;
+    try {
+      sessionStorage.removeItem('tr_cat');
+      sessionStorage.removeItem('tr_idx');
+    } catch(e) {}
+    // Hide nav bar
+    var bar = document.getElementById('trainerNavBar');
+    if (bar) bar.style.display = 'none';
+    // Deselect active row in panel
+    var panel = document.getElementById(PANEL_ID);
+    if (panel) {
+      panel.querySelectorAll('.tr-exercise').forEach(function (el) {
+        el.classList.remove('tr-active');
+      });
+    }
+  }
+
   function loadGroove(urlQuery, cat, idx) {
     if (cat !== undefined) currentCat = cat;
     if (idx !== undefined) currentIdx = idx;
