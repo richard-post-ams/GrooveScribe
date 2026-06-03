@@ -1021,7 +1021,7 @@ function GrooveWriter() {
 			// MIDI is sliced to A-B range, so percent_complete 0->1 spans only those bars.
 			// Offset the highlight by (A-1) measures so it lands on the correct bars visually.
 			var _abStart = window.ABLoop.getStart() - 1;    // 0-based start measure
-			var _abRange = window.ABLoop.getEnd() - _abStart; // number of measures in A-B
+			var _abRange = window.ABLoop.getEnd() - window.ABLoop.getStart(); // bars in loop (B is exclusive)
 			note_id_in_32 = Math.floor(percent_complete * _npm32 * _abRange) + _abStart * _npm32;
 		} else {
 			note_id_in_32 = Math.floor(percent_complete * _npm32 * class_number_of_measures);
@@ -2733,8 +2733,8 @@ function GrooveWriter() {
 				var ab_start = 0;
 				var ab_end   = class_number_of_measures;
 				if (window.ABLoop && window.ABLoop.isActive()) {
-					ab_start = window.ABLoop.getStart() - 1;  // 0-based
-					ab_end   = window.ABLoop.getEnd();        // 1-based inclusive = exclusive end for loop
+					ab_start = window.ABLoop.getStart() - 1;  // 0-based first bar to play
+					ab_end   = window.ABLoop.getEnd() - 1;    // 0-based exclusive end - B marker is loop END, B bar not played
 				}
 
 				// First measure of the range
