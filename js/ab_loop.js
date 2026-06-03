@@ -119,21 +119,13 @@
     if (isNaN(measureIndex)) return;
     if (container.querySelector('.ab-loop-btn')) return;
 
-    // Button sits at END of bar N but should trigger bar N+1
-    // Exception: last bar has no next bar so it triggers itself
-    var triggerIndex = measureIndex + 1;
-    // Check if next bar exists
-    if (!document.getElementById('staff-container' + triggerIndex)) {
-      triggerIndex = measureIndex;
-    }
-
     var btn = document.createElement('span');
     btn.className = 'ab-loop-btn';
-    btn.setAttribute('data-measure', triggerIndex);
+    btn.setAttribute('data-measure', measureIndex);
     btn.title = 'Click to set A-B loop point';
     btn.textContent = '\u25CB';
     btn.addEventListener('click', function () {
-      setMarker(triggerIndex);
+      setMarker(measureIndex);
     });
 
     // Insert before the closeMeasureButton (which sits after notes-row-container)
