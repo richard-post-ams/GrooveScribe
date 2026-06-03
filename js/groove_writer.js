@@ -1015,7 +1015,17 @@ function GrooveWriter() {
 		if (class_permutation_type != "none")
 			percent_complete = (percent_complete * get_numberOfActivePermutationSections()) % 1.0;
 
-		var note_id_in_32 = Math.floor(percent_complete * root.myGrooveUtils.calc_notes_per_measure((usingTriplets() ? 48 : 32), class_num_beats_per_measure, class_note_value_per_measure) * class_number_of_measures);
+		var _npm32 = root.myGrooveUtils.calc_notes_per_measure((usingTriplets() ? 48 : 32), class_num_beats_per_measure, class_note_value_per_measure);
+		var note_id_in_32;
+		if (window.ABLoop && window.ABLoop.isActive()) {
+			// MIDI is sliced to A-B range, so percent_complete 0->1 spans only those bars.
+			// Offset the highlight by (A-1) measures so it lands on the correct bars visually.
+			var _abStart = window.ABLoop.getStart() - 1;    // 0-based start measure
+			var _abRange = window.ABLoop.getEnd() - _abStart; // number of measures in A-B
+			note_id_in_32 = Math.floor(percent_complete * _npm32 * _abRange) + _abStart * _npm32;
+		} else {
+			note_id_in_32 = Math.floor(percent_complete * _npm32 * class_number_of_measures);
+		}
 		var real_note_id = (note_id_in_32 / root.myGrooveUtils.getNoteScaler(class_notes_per_measure, class_num_beats_per_measure, class_note_value_per_measure));
 
 		//hilight_individual_note(instrument, id);
