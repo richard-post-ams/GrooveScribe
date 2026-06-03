@@ -194,15 +194,14 @@
       c.classList.remove('ab-highlight-a', 'ab-highlight-b', 'ab-highlight-range');
       c.style.borderTop = '';
       if (abLoopStart !== null && abLoopEnd !== null) {
-        if (m === abLoopStart) {
-          c.classList.add('ab-highlight-a');
-        } else if (m === abLoopEnd) {
-          c.classList.add('ab-highlight-b');
-        } else if (m > abLoopStart && m < abLoopEnd) {
+        // Loop region is [A, B) - bars from A (inclusive) up to B (exclusive)
+        // B is the END marker so B bar itself is NOT in the loop
+        if (m >= abLoopStart && m < abLoopEnd) {
           c.classList.add('ab-highlight-range');
         }
       } else if (abLoopStart !== null && m === abLoopStart) {
-        c.classList.add('ab-highlight-a');
+        // Only A set - highlight A bar as the (incomplete) loop start
+        c.classList.add('ab-highlight-range');
       }
     });
 
