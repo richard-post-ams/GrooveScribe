@@ -128,11 +128,10 @@
       setMarker(measureIndex);
     });
 
-    // Insert before the closeMeasureButton (which sits after notes-row-container)
-    // This places our button visibly in the bar's control area
-    var closeBtn = container.querySelector('.closeMeasureButton');
-    if (closeBtn) {
-      container.insertBefore(btn, closeBtn);
+    // Insert as FIRST child so the button sits at the LEFT edge of its bar.
+    // This makes 'the circle at the start of bar N' unambiguously bar N's button.
+    if (container.firstChild) {
+      container.insertBefore(btn, container.firstChild);
     } else {
       container.appendChild(btn);
     }
