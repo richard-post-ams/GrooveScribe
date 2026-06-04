@@ -519,4 +519,21 @@
 
       <div id="gm-version">v0.048</div>
 
+
+  <!-- GrooveTrainer: apply notation-only class when in iframe with Mode=view -->
+  <script>
+  (function() {
+    function applyEmbedMode() {
+      var params = new URLSearchParams(window.location.search);
+      if (window.self !== window.top && params.get('Mode') === 'view') {
+        document.body.classList.add('gt-embed-mode');
+      }
+    }
+    if (document.body) {
+      applyEmbedMode();
+    } else {
+      document.addEventListener('DOMContentLoaded', applyEmbedMode);
+    }
+  }());
+  </script>
 </body>
