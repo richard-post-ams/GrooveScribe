@@ -1457,16 +1457,6 @@ body.gt-train-mode .Printable {
 }
 
 
-/* ═══════════════════════════════════════════
-   gt-embed-mode: notation only when in iframe
-   Applied when Mode=view AND loaded in iframe
-═══════════════════════════════════════════ */
-body.gt-embed-mode {
-  background: #ffffff;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
 body.gt-embed-mode #LeftHandNav,
 body.gt-embed-mode #TopNav,
 body.gt-embed-mode .midiPlayerClass,
@@ -1487,6 +1477,47 @@ body.gt-embed-mode .Printable {
   padding: 0 !important;
 }
 body.gt-embed-mode .fullWidthEle {
+  max-width: 100% !important;
+}
+
+
+/* ═══════════════════════════════════════════
+   gt-embed-mode: notation-only when in iframe
+   Applied when Mode=view AND in iframe context
+═══════════════════════════════════════════ */
+body.gt-embed-mode {
+  background: #fff;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hide everything except the notation */
+body.gt-embed-mode #LeftHandNav,
+body.gt-embed-mode #TopNav,
+body.gt-embed-mode #midiPlayer,
+body.gt-embed-mode #sheetMusicTextFields,
+body.gt-embed-mode #sheetTopBar,
+body.gt-embed-mode #bottomButtonRow,
+body.gt-embed-mode #musicalInput,
+body.gt-embed-mode #gm-version {
+  display: none !important;
+}
+
+/* Make the notation fill the iframe cleanly */
+body.gt-embed-mode,
+body.gt-embed-mode #GrooveWriter,
+body.gt-embed-mode #RightHandContent {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+body.gt-embed-mode #sheetMusicDiv {
+  margin: 0 !important;
+  padding: 4px 8px !important;
+  width: 100% !important;
   max-width: 100% !important;
 }
 
