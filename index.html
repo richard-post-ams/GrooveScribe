@@ -519,42 +519,4 @@
 
       <div id="gm-version">v0.048</div>
 
-  <!-- GrooveTrainer embed mode -->
-  <script>
-  (function() {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('train') === '1') {
-      document.documentElement.classList.add('gt-train-mode');
-      document.addEventListener('DOMContentLoaded', function() {
-        document.body.classList.add('gt-train-mode');
-      });
-    }
-    // postMessage bridge for GrooveTrainer player controls
-    window.addEventListener('message', function(e) {
-      var d = e.data;
-      if (!d || !d.action) return;
-      if (d.action === 'play') {
-        if (d.bpm && window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
-          var ti = document.getElementById('tempoInput0');
-          if (ti) { ti.value = d.bpm; window.myGrooveWriter.myGrooveUtils.setTempo(d.bpm); }
-        }
-        var btn = document.querySelector('.midiPlayButton, #midiPlayImage0');
-        if (btn && window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
-          window.myGrooveWriter.myGrooveUtils.startMIDI_playback();
-        }
-      } else if (d.action === 'stop') {
-        if (window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
-          window.myGrooveWriter.myGrooveUtils.stopMIDI_playback();
-        }
-      } else if (d.action === 'setbpm' && d.bpm) {
-        var ti2 = document.getElementById('tempoInput0');
-        if (ti2) { ti2.value = d.bpm; }
-        if (window.myGrooveWriter && window.myGrooveWriter.myGrooveUtils) {
-          window.myGrooveWriter.myGrooveUtils.setTempo(d.bpm);
-        }
-      }
-    });
-  }());
-  </script>
 </body>
-</html>
