@@ -1456,3 +1456,37 @@ body.gt-train-mode .Printable {
   padding: 0 !important;
 }
 
+
+/* ═══════════════════════════════════════════
+   gt-embed-mode: notation only when in iframe
+   Applied when Mode=view AND loaded in iframe
+═══════════════════════════════════════════ */
+body.gt-embed-mode {
+  background: #ffffff;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+body.gt-embed-mode #LeftHandNav,
+body.gt-embed-mode #TopNav,
+body.gt-embed-mode .midiPlayerClass,
+body.gt-embed-mode #grooveInfoContainer,
+body.gt-embed-mode #sheetTopBar,
+body.gt-embed-mode #bottomButtonRow,
+body.gt-embed-mode #gm-version {
+  display: none !important;
+}
+body.gt-embed-mode #sheetMusicDiv {
+  margin: 0 !important;
+  padding: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.gt-embed-mode .Printable {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+body.gt-embed-mode .fullWidthEle {
+  max-width: 100% !important;
+}
+
