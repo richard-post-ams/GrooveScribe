@@ -1426,3 +1426,33 @@
 		letter-spacing: 0.5px;
 	}
 
+
+/* ═══════════════════════════════════════
+   GROOVETRAINER EMBED MODE (?train=1)
+   Hides all chrome, shows notation only
+════════════════════════════════════════ */
+body.gt-train-mode {
+  background: #ffffff;
+  overflow: hidden;
+}
+body.gt-train-mode #LeftHandNav,
+body.gt-train-mode #TopNav,
+body.gt-train-mode .midiPlayerClass,
+body.gt-train-mode #grooveInfoContainer,
+body.gt-train-mode #sheetTopBar,
+body.gt-train-mode #bottomButtonRow,
+body.gt-train-mode #musicalInput,
+body.gt-train-mode #gm-version {
+  display: none !important;
+}
+body.gt-train-mode #sheetMusicDiv {
+  margin: 0 !important;
+  padding: 8px 0 0 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.gt-train-mode .Printable {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
