@@ -3559,6 +3559,12 @@ function GrooveWriter() {
 		if("view" != root.myGrooveUtils.getQueryVariableFromURL("Mode", "edit"))
 			root.swapViewEditMode(true);
 
+		// GrooveTrainer embed: when loaded inside an iframe in view mode,
+		// hide all chrome so only the notation is visible
+		if (window.self !== window.top && root.myGrooveUtils.getQueryVariableFromURL("Mode", "edit") === "view") {
+			document.body.classList.add("gt-embed-mode");
+		}
+
 		// set the background and text color of the current subdivision
 		selectButton(document.getElementById("subdivision_" + class_notes_per_measure + "ths"));
 
